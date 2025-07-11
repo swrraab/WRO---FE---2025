@@ -1,26 +1,48 @@
-Engineering materials
-====
+Approach
+===
 
-This repository contains engineering materials of a self-driven vehicle's model participating in the WRO Future Engineers competition in the season 2022.
+Considerations
+Since we are a rookie team and the time is short, several important decisions were to be made to ensure the team is able to learn and compete in the available time
+We will go with the tried and trusted method to build and program the car
+Use an off-market car chassis and modify as needed
+Add 3D printed parts to mount sensors, Micro-Controller Unit (MCU), Single-board Computer (SBC) and Power unit.
+Use of a MCU connected to distance sensor for obstacle detection, Color sensor for line detection and  Inertial Movement Unit (IMU) for navigation
+Use of a Raspberry Pi with a camera for vision in the Obstacle Challenge
+Python for programming both MCU and Raspberry Pi
+AI tools like ChatGPT and Perplexity were used only for researching ideas. Base code was gathered from various sources on the internet and altered to suit our choice of platform and solution.
 
-## Content
 
-* `t-photos` contains 2 photos of the team (an official one and one funny photo with all team members)
-* `v-photos` contains 6 photos of the vehicle (from every side, from top and bottom)
-* `video` contains the video.md file with the link to a video where driving demonstration exists
-* `schemes` contains one or several schematic diagrams in form of JPEG, PNG or PDF of the electromechanical components illustrating all the elements (electronic components and motors) used in the vehicle and how they connect to each other.
-* `src` contains code of control software for all components which were programmed to participate in the competition
-* `models` is for the files for models used by 3D printers, laser cutting machines and CNC machines to produce the vehicle elements. If there is nothing to add to this location, the directory can be removed.
-* `other` is for other files which can be used to understand how to prepare the vehicle for the competition. It may include documentation how to connect to a SBC/SBM and upload files there, datasets, hardware specifications, communication protocols descriptions etc. If there is nothing to add to this location, the directory can be removed.
+Choice of MCU
+===
+One of the early decisions to be made was the choice of MCU. Most teams seem to use Arduino Uno. Some teams use other variants of Arduino such as Nano or Mega. Some others use Lego platforms such as EV3 or Spike. We’ve also seen NVidia Jetson being used. 
+However, we wanted a cost effective and easily learnable platform. One of the forerunners in this decision was the Micro:bit (MB) for several reasons: 
+We were already familiar with MB since we learned to use it at school - although it was just the basics
+MB has a smaller form factor
+MB has several inbuilt sensors, most importantly it has an Inertial Movement Unit (IMU) sensor
+We did some research and found several articles supporting our decision
+https://www.codeadvantage.org/coding-for-kids-blog/micro-bit-vs-arduino 
+https://picobricks.com/blogs/info/microbit-vs-arduino
 
-## Introduction
+So we made the decision to experiment with MB first and if that doesn’t work well, we can always switch to Arduino
+Most important consideration in the experimentation with MB was to find a shield that offers all the connectivity we need
+We found a shield for Micro:bit that offered all the ports we needed and result of experiment are documented below
+Connect to a DC motor
+Connect to a Servo motor
+Connect to 2 distance sensors 
+Connect to 1 or 2 color sensors 
+Interface with Raspberry Pi over I2C or UART
 
-_This part must be filled by participants with the technical clarifications about the code: which modules the code consists of, how they are related to the electromechanical components of the vehicle, and what is the process to build/compile/upload the code to the vehicle’s controllers._
+Choice of SBC
+===
+We already decided that we will use Raspberry Pi with a camera for vision tracking since that is the most popular solutions
+Some teams have used other products like PixyCam, HuskyLens etc to enable vision directly on their Arduino.
+But for the same cost, we wanted to learn more by using a Raspberry Pi since there is a lot of resources available and vision tracking is exciting (if we are able to learn it in the available time)
+We did some research and came across OpenCV and YOLO as popular libraries. There are plenty of support resources to load either library onto a Raspberry Pi 4 with a basic camera module.
 
-## How to prepare the repo based on the template
 
-_Remove this section before the first commit to the repository_
+Connection from SBC (Raspberry Pi) to transmit navigation decisions to the MCU (Micro:bit)
+===
+The SBC should use the vision data and compute the direction of travel - Turn left, Turn right, Go forward, Stop.
+SBC will communicate the navigation data to the MCU over serial connection
+MCU will then combine the navigation data from the SBC and the sensor data to make decisions to drive
 
-1. Clone this repo by using the `git clone` functionality.
-2. Remove `.git` directory
-3. [Initialize a new public repository on GitHub](https://github.com/new) by following instructions from "create a new repository on the command line" section (appeared after pressing "Create repository" button).
