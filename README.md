@@ -2,9 +2,9 @@ Approach
 ===
 
 Considerations
-Since we are a rookie team and the time is short, several important decisions were to be made to ensure the team is able to learn and compete in the available time
-We will go with the tried and trusted method to build and program the car
-Use an off-market car chassis and modify as needed
+* Since we are a rookie team and the time is short, several important decisions were to be made to ensure the team is able to learn and compete in the available time
+* We will go with the tried and trusted method to build and program the car
+** Use an off-market car chassis and modify as needed
 Add 3D printed parts to mount sensors, Micro-Controller Unit (MCU), Single-board Computer (SBC) and Power unit.
 Use of a MCU connected to distance sensor for obstacle detection, Color sensor for line detection and  Inertial Movement Unit (IMU) for navigation
 Use of a Raspberry Pi with a camera for vision in the Obstacle Challenge
