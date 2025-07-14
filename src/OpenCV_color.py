@@ -2,19 +2,6 @@ import cv2
 import numpy as np
 from picamera2 import Picamera2
 
-from time import sleep
-
-import serial
-
-# Replace with your microbit port number
-s = serial.Serial("/dev/ttyACM0")
-s.baudrate = 115200
-s.parity   = serial.PARITY_NONE
-s.bytesize = serial.EIGHTBITS
-s.stopbits = serial.STOPBITS_ONE
-s.timeout  = 1
-s.reset_input_buffer()
-
 # Program captures video from the camera and detects red and green colored blocks in the frame.
 # It then decided which colored block is bigger to determine the direction to turn.
 # Red block means turn right, green block means turn left.
@@ -132,23 +119,14 @@ while True:
         x, y, w, h = cv2.boundingRect(largest_contour_r)
         red_bbox = (x, y, x + w, y + h)
     
-    nav = 0
-
     if red_bbox is not None and getSize(red_bbox) > bbox_size_threshold and (getSize(red_bbox) >= getSize(green_bbox)):
         x, y, w, h = red_bbox
         cv2.rectangle(cap, (x, y), (w, h), (0, 0, 255), 1)
-        nav = 1
+        print ("TURN RIGHT")
     elif green_bbox is not None and getSize(green_bbox) > bbox_size_threshold and (getSize(green_bbox) > getSize(red_bbox)):
         x, y, w, h = green_bbox
         cv2.rectangle(cap, (x, y), (w, h), (0, 255, 0), 1)
-        nav = 9
-    else:
-        nav = 0
- 
-    s.write(str(nav).encode('utf-8'))
-    s.flush()
-    print (nav)
-    # sleep(0.1)
+        print ("TURN LEFT")
     
     # print(midXPoint(bbox))
 
@@ -156,5 +134,5 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-s.close()
+
 cv2.destroyAllWindows()
