@@ -27,11 +27,11 @@ Note: AI tools like ChatGPT and Perplexity were used only for researching ideas.
 - So we made the decision to experiment with MB first and if that doesn’t work well, we can always switch to Arduino
 - Most important consideration in the experimentation with MB was to find a shield that offers all the connectivity we need
 - We found a shield for Micro:bit that offered all the ports we needed and result of experiment are documented below
-  [X] Connect to a DC motor
-  [X] Connect to a Servo motor
-  [X] Connect to 2 distance sensors 
-  [X] Connect to 1 or 2 color sensors 
-  [X] Interface with Raspberry Pi over I2C or UART
+  - [X] Connect to a DC motor
+  - [X] Connect to a Servo motor
+  - [X] Connect to 2 distance sensors 
+  - [X] Connect to 1 or 2 color sensors 
+  - [X] Interface with Raspberry Pi over I2C or UART
 
 ## Choice of SBC
 ===
