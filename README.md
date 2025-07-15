@@ -1,5 +1,5 @@
 # Approach
-===
+
 
 ## Considerations
 - Since we are a rookie team and the time is short, several important decisions were to be made to ensure the team is able to learn and compete in the available time
@@ -14,7 +14,7 @@ Note: AI tools like ChatGPT and Perplexity were used only for researching ideas.
 
 
 ## Choice of MCU
-===
+
 - One of the early decisions to be made was the choice of MCU. Most teams seem to use Arduino Uno. Some teams use other variants of Arduino such as Nano or Mega. Some others use Lego platforms such as EV3 or Spike. We’ve also seen NVidia Jetson being used. 
 - However, we wanted a cost effective and easily learnable platform. One of the forerunners in this decision was the Micro:bit (MB) for several reasons: 
   - We were already familiar with MB since we learned to use it at school - although it was just the basics
@@ -34,7 +34,7 @@ Note: AI tools like ChatGPT and Perplexity were used only for researching ideas.
   - [X] Interface with Raspberry Pi over I2C or UART
 
 ## Choice of SBC
-===
+
 - We already decided that we will use Raspberry Pi with a camera for vision tracking since that is the most popular solutions
 - Some teams have used other products like PixyCam, HuskyLens etc to enable vision directly on their Arduino.
 - But for the same cost, we wanted to learn more by using a Raspberry Pi since there is a lot of resources available and vision tracking is exciting (if we are able to learn it in the available time)
@@ -42,7 +42,7 @@ Note: AI tools like ChatGPT and Perplexity were used only for researching ideas.
 
 
 ## Connection from SBC (Raspberry Pi) to transmit navigation decisions to the MCU (Micro:bit)
-===
+
 - The SBC should use the vision data and compute the direction of travel - Turn left, Turn right, Go forward
 - SBC will communicate the navigation data to the MCU over serial connection
 - MCU will then combine the navigation data from the SBC and the sensor data to make decisions to drive
