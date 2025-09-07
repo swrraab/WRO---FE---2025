@@ -1,4 +1,5 @@
-# **2025 WRO Future Engineers** - Team **Pink Boba Pearls** 🌸🧋🫧
+# **2025 WRO Future Engineers Competition** 
+# Team **Pink Boba Pearls** 🌸🧋🫧
 This repository is for the 2025 WRO Future Engineeers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
@@ -14,9 +15,8 @@ This repository has the below folders
 ## The Hardware
 1. **Microcontroller - [Microbit v2](https://microbit.org/buy/bbc-microbit-single/):** Together with the Siyeenove Mshield Pinout board - For controlling drive motor and steering servo motor based on input from the Raspberry Pi
 2. **Single Board Computer (SBC) - [Raspberry Pi 4 Model B 2GB](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/):** Vehicle mobility control
----
 
-We also used
+Other parts used
 1. Sainsmart 160 degree wideangle 5PM camera for Raspberry Pi
 2. Lego Technic pieces - to build the chassis
 3. 12V Lithium battery power supply - Power supply for all the components
@@ -45,14 +45,14 @@ There are 2 important programs that make the car run
   * Detailed explanation of the code is provided in the engineering documentation
 
 * `pi2mb_motors_control.py` - loaded to the Microbit to drive the pi2mb_motors_control
-  * As soon as it starts, it initialized the motor speed to 0 and servo direction to 90 (which keeps the car straight)
+  * As soon as it starts, it initializes the motor speed to 0 and servo direction to 90 (which keeps the car straight)
   * It awaits signal from the Raspberry Pi to confirm it has started successfully. When it receives the confirmation, it displays an 'S' on the LED array
   * When the user presses the 'A' button, it transmits a 'go' signal to the Raspberry Pi and awaits acknowledgement from the Raspberry Pi. When the acknowledgement is received, it displays a '+' on the LED array indicating that the car has started.
   * As the car runs, Raspberry Pi transmits the servo steering turn data and DC motor speed data as byte stream  which the Microbit will convert to numerical data, and split to integer values to be used for motor control
   * The servo turn angle is sent as analog signal to the servo motor directly. The 5V input required by the Servo is supplied by the Siyeenove Mshield board.
   * The speed data is sent as PWM signal to the L298N motor driver which uses the PWM signal and the power input from the 12V battery to drive the 9V DC motor. 
   * If the user wants to stop the car (and reset its values so the car can run again), they can simply press the 'A' button again which will signal the Raspberry Pi to stop the loop that processes vision data. This will display a minus '-' on the LED array.
-  * If the user wants to kill the car (completely end the program), they can press the 'B' button which will signal the Raspbery Pi to exit the Python program
+  * If the user wants to kill the car (completely end the program), they can press the 'B' button which will signal the Raspberry Pi to exit the Python program
 
 ## Loading the software on to the hardware
 Below section explains how to load each program on to their respective hardwares
