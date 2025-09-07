@@ -2,13 +2,14 @@
 This repository is for the 2025 WRO Future Engineeers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
-1. `models` - # Contains STL files we used for our 3D prints 
-2. `other` - # This has nothing
-3. `schemes` - # Contains our connection schematic and power distribution schematic
-4. `src` - # Contains our source code 
-5. `t-photos` - # Contains team photos
-6. `v-photos` - # Contains vehicle photos
-7. `videos` - # Contains links to vehicle demo youtube videos`
+1. `docs` - Contains the Engineering Documentation
+2. `models` - Contains STL files we used for our 3D prints 
+2. `other` - Contains miscellanous files used for README.md
+3. `schemes` - Contains our connection schematic and power distribution schematic
+4. `src` - Contains our source code 
+5. `t-photos` - Contains team photos
+6. `v-photos` - Contains vehicle photos
+7. `videos` - Contains links to vehicle demo youtube videos`
 
 ## The Hardware
 1. **Microcontroller - [Microbit v2](https://microbit.org/buy/bbc-microbit-single/):** Together with the Siyeenove Mshield Pinout board - For controlling drive motor and steering servo motor based on input from the Raspberry Pi
