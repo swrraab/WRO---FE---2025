@@ -35,14 +35,14 @@ Refer to the component schematic to connect all the above hardware together to m
 There are 2 important programs that make the car run
 
 1. `obs_ch.py` - loaded to the Raspberry Pi to process the vision input from the camera. 
-  * It is part of the crontab, which launches the program when the Raspberry Pi boots up 
-  * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program. 
-  * Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit. 
-  * As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
-  * The program has 2 distinct vision processing logic inside it
-    1. For the open run, it looks at the walls and uses PD control to keep the car between the walls
-    2. For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks. 
-  Detailed explanation of the code is provided in the engineering documentation
+    * It is part of the crontab, which launches the program when the Raspberry Pi boots up 
+    * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program. 
+    * Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit. 
+    * As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
+    * The program has 2 distinct vision processing logic inside it
+      1. For the open run, it looks at the walls and uses PD control to keep the car between the walls
+      2. For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks. 
+    * Detailed explanation of the code is provided in the engineering documentation
 
 2. `pi2mb_motors_control.py` - loaded to the Microbit to drive the pi2mb_motors_control
   * As soon as it starts, it initialized the motor speed to 0 and servo direction to 90 (which keeps the car straight)
