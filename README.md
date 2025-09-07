@@ -73,7 +73,18 @@ Below section explains how to load each program on to their respective hardwares
     * Press `Ctrl+x` to save the file and exit the program
   * Test the camera with one of these commands - `rpicam-hello` or `libcamera-hello`
 * Download the [`obs_ch.py`](/src/obs_ch.py) file from the `src` folder
-* Ensure you can run this program by opening terminal and running `python obs_ch.py`. This should start running the program. If it does not, open the file and check if `DRAW` variable is set to `True`. 
+* Ensure you can run this program by opening terminal and running `python obs_ch.py`. This should start running the program. If it does not, open the file and check if `DRAW` variable is set to `True` to troubleshoot.
+
+* To automatically run this program when Raspberry Pi boots up, it needs to be part of the crontab. Follow these instructions to set it up
+  * Open the crontab with the command `sudo crontab -e`
+  * Add the python program to run upon bootup by adding this statement to the end of the crontab `@reboot /usr/bin/python3 </path/to>/obs_ch.py >/dev/null 2>&1 &`
+  `Tip` - The above will redirect the standard print output and errors to `/dev/null` which is not useful if you want to access them. If you want debug print messages to be saved, ensure you create a log file with the command `sudo touch /dev/cronlog` and adding this file path to the above crontab statement instead. 
+
+* Now you are all setup. If you reboot your Raspberry Pi, `obs_ch.py` file will start running. If it is not, check the `/dev/cronlog` for error messages to troubleshoot the problem
+
+
+
+
 
 
 
