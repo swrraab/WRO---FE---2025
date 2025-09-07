@@ -35,7 +35,7 @@ Refer to the component schematic to connect all the above hardware together to m
 There are 2 important programs that make the car run
 
 * `obs_ch.py` - loaded to the Raspberry Pi to process the vision input from the camera. 
-    * It is part of the crontab, which launches the program when the Raspberry Pi boots up 
+  * It is part of the crontab, which launches the program when the Raspberry Pi boots up 
     * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program. 
     * Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit. 
     * As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
