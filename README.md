@@ -1,49 +1,39 @@
-# Approach
+# **2025 WRO Future Engineers** - Team **Pink Boba Pearls** 🌸🧋🫧
+This repository is for the 2025 WRO Future Engineeers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
+This repository has the below folders
+    
+    1. models - # Contains STL files we used for our 3D prints 
+    2. other - # This has nothing
+    3. schemes - # Contains our connection schematic and power distribution schematic
+    4. src - # Contains our source code 
+    5. t-photos - # Contains team photos
+    6. v-photos - # Contains vehicle photos
+    7. videos - # Contains links to vehicle demo youtube videos
 
-## Considerations
-- Since we are a rookie team and the time is short, several important decisions were to be made to ensure the team is able to learn and compete in the available time
-- We will go with the tried and trusted method to build and program the car
-  - Use an off-market car chassis and modify as needed
-  - Add 3D printed parts to mount sensors, Micro-Controller Unit (MCU), Single-board Computer (SBC) and Power unit.
-  - Use of a MCU connected to distance sensor for obstacle detection, Color sensor for line detection and  Inertial Movement Unit (IMU) for navigation
-  - Use  of a Raspberry Pi with a camera for vision in the Obstacle Challenge
-  - Python for programming both MCU and Raspberry Pi
+## The Hardware
+1. **Microcontroller - [Microbit v2](https://microbit.org/buy/bbc-microbit-single/):** Together with the Siyeenove Mshield Pinout board - For controlling drive motor and steering servo motor based on input from the Raspberry Pi
+2. **Single Board Computer (SBC) - [Raspberry Pi 4 Model B 2GB](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/):** Vehicle mobility control
+---
 
-Note: AI tools like ChatGPT and Perplexity were used only for researching ideas. Base code was gathered from various sources on the internet and altered to suit our choice of platform and solution.
+We also used
+1. Sainsmart 160 degree wideangle 5PM camera for Raspberry Pi
+2. Lego Technic - to build the chassis
+3. 12V Lithium battery power supply
+4. 12v to 5V Step-down converter - To supply power to Raspberry Pi and Microbit
+5. L298N Motor Driver - To drive the 9V Lego DC motor
+6. 9V Lego Motor
+7. SG90 Micro Servo Motor
+8. Various cables for power connections to the devices, USB cable for serial connection between Microbit and Raspberry Pi, and wires to transmit data from Microbit to the motors.  
 
+Refer to the component schematic to connect all the above hardware together to make the car
 
-## Choice of MCU
+[Component Schematic](/schemes/WRO%20Future%20Engineeers%202025%20-%20Component%20Schematic.png)
 
-- One of the early decisions to be made was the choice of MCU. Most teams seem to use Arduino Uno. Some teams use other variants of Arduino such as Nano or Mega. Some others use Lego platforms such as EV3 or Spike. We’ve also seen NVidia Jetson being used. 
-- However, we wanted a cost effective and easily learnable platform. One of the forerunners in this decision was the Micro:bit (MB) for several reasons: 
-  - We were already familiar with MB since we learned to use it at school - although it was just the basics
-  - MB has a smaller form factor
-  - MB has several inbuilt sensors, most importantly it has an Inertial Movement Unit (IMU) sensor
-  - We did some research and found several articles supporting our decision
-    - https://www.codeadvantage.org/coding-for-kids-blog/micro-bit-vs-arduino 
-    - https://picobricks.com/blogs/info/microbit-vs-arduino
+## The Software
 
-- So we made the decision to experiment with MB first and if that doesn’t work well, we can always switch to Arduino
-- Most important consideration in the experimentation with MB was to find a shield that offers all the connectivity we need
-- We found a shield for Micro:bit that offered all the ports we needed and result of experiment are documented below
-  - [X] Connect to a DC motor
-  - [X] Connect to a Servo motor
-  - [X] Connect to 2 distance sensors 
-  - [X] Connect to 1 or 2 color sensors 
-  - [X] Interface with Raspberry Pi over I2C or UART
+There are 2 important programs
 
-## Choice of SBC
-
-- We already decided that we will use Raspberry Pi with a camera for vision tracking since that is the most popular solutions
-- Some teams have used other products like PixyCam, HuskyLens etc to enable vision directly on their Arduino.
-- But for the same cost, we wanted to learn more by using a Raspberry Pi since there is a lot of resources available and vision tracking is exciting (if we are able to learn it in the available time)
-- We did some research and came across OpenCV and YOLO as popular libraries. There are plenty of support resources to load either library onto a Raspberry Pi 4 with a basic camera module.
-
-
-## Connection from SBC (Raspberry Pi) to transmit navigation decisions to the MCU (Micro:bit)
-
-- The SBC should use the vision data and compute the direction of travel - Turn left, Turn right, Go forward
-- SBC will communicate the navigation data to the MCU over serial connection
-- MCU will then combine the navigation data from the SBC and the sensor data to make decisions to drive
+1. `obs_ch.py` - loaded to the Raspberry Pi to process the vision input from the camera
+2. `pi2mb_motors_control.py` - loaded to the Microbit to drive the pi2mb_motors_control
 
