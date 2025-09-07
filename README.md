@@ -2,7 +2,6 @@
 This repository is for the 2025 WRO Future Engineeers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
-    
     1. models - # Contains STL files we used for our 3D prints 
     2. other - # This has nothing
     3. schemes - # Contains our connection schematic and power distribution schematic
@@ -36,13 +35,13 @@ There are 2 important programs that make the car run
 
 * `obs_ch.py` - loaded to the Raspberry Pi to process the vision input from the camera. 
   * It is part of the crontab, which launches the program when the Raspberry Pi boots up 
-    * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program. 
-    * Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit. 
-    * As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
-    * The program has 2 distinct vision processing logic inside it
-      1. For the open run, it looks at the walls and uses PD control to keep the car between the walls
-      2. For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks. 
-    * Detailed explanation of the code is provided in the engineering documentation
+  * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program. 
+  * Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit. 
+  * As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
+  * The program has 2 distinct vision processing logic inside it
+    1. For the open run, it looks at the walls and uses PD control to keep the car between the walls
+    2. For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks. 
+  * Detailed explanation of the code is provided in the engineering documentation
 
 * `pi2mb_motors_control.py` - loaded to the Microbit to drive the pi2mb_motors_control
   * As soon as it starts, it initialized the motor speed to 0 and servo direction to 90 (which keeps the car straight)
@@ -59,10 +58,10 @@ Below section explains how to load each program on to their respective hardwares
 
 **Getting `obs_ch.py` to run on the Raspberry Pi**
 
-1. Follow the Raspberry Pi **[Getting Started page](https://www.raspberrypi.com/documentation/computers/getting-started.html)** and follow all the instructions to get the OS distribution loaded and Raspberry Pi booted up
+* Follow the Raspberry Pi **[Getting Started page](https://www.raspberrypi.com/documentation/computers/getting-started.html)** and follow all the instructions to get the OS distribution loaded and Raspberry Pi booted up
 `Tip` - Ensure you setup the **Raspberry Pi Connect" at the tail end of the instructions to connect to the Raspberry Pi with your laptop. Otherwise, a separate monitor, HDMI cable, keyboard and mouse will be required every time you connect the Raspberry Pi. 
-2. When you access the Raspberry Pi, install a good Python editor like Geany or Thonny. It is possible to install Visual Studio Code, but we had performance issues since our Raspberry Pi only had 2GB RAM
-3. We used Picamera2 libraries to access the camera. The instructions to follow are all over the place. Follow these instructions carefully to get the camera setup. 
+* When you access the Raspberry Pi, install a good Python editor like Geany or Thonny. It is possible to install Visual Studio Code, but we had performance issues since our Raspberry Pi only had 2GB RAM
+* We used Picamera2 libraries to access the camera. The instructions to follow are all over the place. Follow these instructions carefully to get the camera setup. 
   * Access Raspberry Pi and open the terminal window
   * [Update all the software](https://www.raspberrypi.com/documentation/computers/os.html#update-software) running on the Raspberry Pi. You may need to do this every few weeks 
   * Picamera2 may be preinstalled as part of the full software update. However, try the below command just to be sure. If it is not installed, this will install it. 
