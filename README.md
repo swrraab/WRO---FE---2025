@@ -59,13 +59,23 @@ Below section explains how to load each program on to their respective hardwares
 **Getting `obs_ch.py` to run on the Raspberry Pi**
 
 * Follow the Raspberry Pi **[Getting Started page](https://www.raspberrypi.com/documentation/computers/getting-started.html)** and follow all the instructions to get the OS distribution loaded and Raspberry Pi booted up
-`Tip` - Ensure you setup the **Raspberry Pi Connect" at the tail end of the instructions to connect to the Raspberry Pi with your laptop. Otherwise, a separate monitor, HDMI cable, keyboard and mouse will be required every time you connect the Raspberry Pi. 
+`Tip` - Ensure you follow the instruction at the tail end of the above page to setup the **Raspberry Pi Connect". This will allow you to remotely connect to your Raspberry Pi with your laptop over Wifi. Otherwise, a separate monitor, HDMI cable, keyboard and mouse will be required every time you connect the Raspberry Pi. 
 * When you access the Raspberry Pi, install a good Python editor like Geany or Thonny. It is possible to install Visual Studio Code, but we had performance issues since our Raspberry Pi only had 2GB RAM
 * We used Picamera2 libraries to access the camera. The instructions to follow are all over the place. Follow these instructions carefully to get the camera setup. 
   * Access Raspberry Pi and open the terminal window
   * [Update all the software](https://www.raspberrypi.com/documentation/computers/os.html#update-software) running on the Raspberry Pi. You may need to do this every few weeks 
-  * Picamera2 may be preinstalled as part of the full software update. However, try the below command just to be sure. If it is not installed, this will install it. 
-    ``sudo apt install -y python3-picamera2 --no-install-recommends``
+  * Picamera2 may be preinstalled as part of the full software update. However, try the below command just to be sure. If it is not installed, this will install it. [Detailed instruction here](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)
+    `sudo apt install -y python3-picamera2`
+  * Now, we need to configure the settings to use the Sainsmart Wideangle camera which uses the Omnivision 5647 sensor. This is done by 
+    * Open the firmware config by entering the following command on the terminal `sudo nano /boot/firmware/config.txt`
+    * Change `camera_auto_detect=1` to `camera_auto_detect=0`
+    * Under the `[all]` section, add the line `dtoverlay=ov5647`
+    * Press `Ctrl+x` to save the file and exit the program
+  * Test the camera with one of these commands - `rpicam-hello` or `libcamera-hello`
+* Download the [`obs_ch.py`](/src/obs_ch.py) file from the `src` folder
+* Ensure you can run this program by opening terminal and running `python obs_ch.py`. This should start running the program. If it does not, open the file and check if `DRAW` variable is set to `True`. 
+
+
 
 
 
