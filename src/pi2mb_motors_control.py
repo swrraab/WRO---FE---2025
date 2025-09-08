@@ -34,15 +34,6 @@ def on_button_pressed_a():
     
 input.on_button_pressed(Button.A, on_button_pressed_a)
 
-# When Button B is pressed, send "quit" signal to the R-Pi
-# And show a pattern on the screen indicating the quit signal
-def on_button_pressed_b():
-    basic.pause(100)
-    serial.write_string("quit")
-    
-input.on_button_pressed(Button.B, on_button_pressed_b)
-
-
 # def on_forever():
 while True:
     try:
@@ -76,14 +67,7 @@ while True:
                     . . . . #
                     # # # # .
                     """)
-            elif data_in == "squitt":
-                basic.show_leds("""
-                    # . . . #
-                    . # . # .
-                    . . # . .
-                    . # . # .
-                    # . . . #
-                    """)       
+      
         else:
             # decode the input data to separate servo turn degrees, and motor speed values
             deg, speed = int(data_in[:3])-100, int(data_in[3:6])-200
