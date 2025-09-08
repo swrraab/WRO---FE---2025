@@ -8,48 +8,56 @@ from picamera2 import Picamera2
 # IMPORTANT: For the actual run, please change the DRAW value to False
 # True enables the display to show on screen and also display the contour borders
 # False will disable the display so the cron will not fail looking for a display
-DRAW = False
-DEFAULT_SPEED = 95
+DRAW = True
+DEFAULT_SPEED = 110
 DEFAULT_STEER = 90
+MAX_R_STEER = 15
+MAX_L_STEER = 165
 STEER_ADJ = 25
 
+# initializing constants of ratio for controllers
+KP = 0.025 # the proportional gain, a tuning parameter for walls
+KD = 0.1 # the derivative gain, a tuning parameter for walls
+dT = 40 # in milliseconds. This is the time step for each frame processing based on measured value of average 25 frames per second
+K_X = 0.15 # the proportional gain, a tuning parameter for X coordinate of the blocks
+K_Y = 0.12 # the proportional gain, a tuning parameter for Y coordinate of the blocks
+
 # initializing constants for hsv
-BLACK_UP = np.array([180, 255, 60])  # for walls
+BLACK_UP = np.array([180, 255, 70])  # for walls
 BLACK_LOW = np.array([0, 0, 0])
 ORANGE_UP = np.array([22, 255, 255])  # for orange lines
 ORANGE_LOW = np.array([8, 160, 40])
-BLUE_UP = np.array([140, 250, 255])  # for blue lines
-BLUE_LOW = np.array([90, 80, 40])
-GREEN_UP = np.array([75, 255, 255])  # for green blocks
-GREEN_LOW = np.array([50, 110, 20])
-RED_UP_1 = np.array([7, 255, 255])   # for red blocks
+BLUE_UP = np.array([150, 255, 255])  # for blue lines
+BLUE_LOW = np.array([90, 75, 70])
+GREEN_UP = np.array([85, 255, 255])  # for green blocks
+GREEN_LOW = np.array([40, 50, 50])
+RED_UP_1 = np.array([5, 255, 255])   # for red blocks
 RED_LOW_1 = np.array([0, 128, 50])
 RED_UP_2 = np.array([180, 255, 255])
 RED_LOW_2 = np.array([170, 128, 50])
 
-# initializing constants for coordinates of areas in the image
-X1_1_PD = 770  # for walls
-X2_1_PD = 799
+# initializing constants for coordinates of areas in the image - 640 x 480
+X1_1_PD = 610  # for walls
+X2_1_PD = 640
 X1_2_PD = 0
 X2_2_PD = 30
-Y1_PD = 240
-Y2_PD = 600 #480
+Y1_PD = 200 #200
+Y2_PD = 480
 
-X1_LINE = 350  # for counting lines
-X2_LINE = 450
-Y1_LINE = 500
-Y2_LINE = 600 #480
+X1_LINE = 280  # for counting lines
+X2_LINE = 360
+Y1_LINE = 400
+Y2_LINE = 480
 
 X1_CUB = 40  # for block detection
-X2_CUB = 760
-Y1_CUB = 300
-Y2_CUB = 500 #400
+X2_CUB = 600
+Y1_CUB = 200 #160
+Y2_CUB = 440
 
-# initializing constants of ratio for controllers
-KP = 0.022  # the proportional gain, a tuning parameter for walls
-KD = 0.02  # the derivative gain, a tuning parameter for walls
-K_X = 0.025  # the proportional gain, a tuning parameter for blocks
-K_Y = 0.03  # the derivative gain, a tuning parameter for blocks
+X1_STOP = 0
+
+Y1_CUB_BLACK = 400
+BLACK = False
 
 class Frames:  # clsss for areas on the picture
     def __init__(self, img, x_1, x_2, y_1, y_2, low, up):  # init gains coordinates of the area, and hsv boders
@@ -121,17 +129,18 @@ def pd():  # function of proportional–derivative controller for walls
         area_l = max(area_l)
     else:
         area_l = 0
-        
-    # print(f"Area 1: {area_r} Area 2: {area_l} Difference: {area_l-area_r}")
 
-    err = area_r - area_l  # counting the error and the final value of pd
-    steer = int(err * KP + ((err - err_old) // 10 * KD + 90 + steer_adj))
+        
+    # ~ # print(f"Right: {area_r} Left: {area_l} Difference: {area_l-area_r}")
+
+    err = area_r - 1000 - area_l # counting the error and the final value of pd
+    steer = DEFAULT_STEER + steer_adj + int(err * KP + ((err - err_old) // dT * KD))
     err_old = err
 
-    if steer > 150:  # limiting the left turn of servo
-        steer = 150
-    if steer < 30:  # limiting the right turn for servo
-        steer = 30    
+    if steer > MAX_L_STEER:  # limiting the left turn of servo
+        steer = MAX_L_STEER
+    if steer < MAX_R_STEER:  # limiting the right turn for servo
+        steer = MAX_R_STEER    
         
     return(steer)
 
@@ -141,9 +150,9 @@ def pd():  # function of proportional–derivative controller for walls
 
     # ~ steer_adj = 0  # getting the addition to pd, to compensate the angle of the camera
     # ~ if direction == 'CW':
-        # ~ steer_adj  = -10
+        # ~ steer_adj  = 5
     # ~ if direction == 'CCW':
-        # ~ steer_adj = -15
+        # ~ steer_adj = 5
 
     # ~ contours = pd_r.find_contours(to_draw=DRAW, color=(255, 255, 255))  # getting the contours for 1_st area
     # ~ area_r = map(cv2.contourArea, contours)  # getting the area of the biggest contour
@@ -158,18 +167,22 @@ def pd():  # function of proportional–derivative controller for walls
         # ~ area_l = max(area_l)
     # ~ else:
         # ~ area_l = 0
+        
+    # ~ print(f"Right: {area_r} Left: {area_l} Difference: {area_r-area_l}")
 
     # ~ err = area_r - area_l # counting the error and the final value of pd
-    # ~ steer = int(err * KP + ((err - err_old) // 10) * KD + 90 + steer_adj)
+    # ~ steer = DEFAULT_STEER + steer_adj + int(err * KP + ((err - err_old) // dT * KD))
     # ~ err_old = err
 
     # ~ if area_l != 0 and area_r == 0:  # if there is no wall in one of ares, turning to the max to needed side
         # ~ flag_right = True  # changing the flag or turning
         # ~ if not timer_flag:  # resetting the timer of turning
+            # ~ print("r_timer")
             # ~ if time.time() - time_green < 0.2:  # if the turn, right after the inner block, turn to the max
                 # ~ after_block = True
                 # ~ if direction == 'CW':
                     # ~ time_turn = time.time() - 5
+                    # ~ print("gcw")
             # ~ else:
                 # ~ time_turn = time.time()
             # ~ timer_flag = True
@@ -220,7 +233,7 @@ def pd():  # function of proportional–derivative controller for walls
         # ~ steer = 150
     # ~ elif steer < 30:  # limiting the max turning for servo
         # ~ steer = 30
-        
+    # ~ print(steer)
     # ~ return steer  # returning controlling influence of pd
 
 
@@ -228,49 +241,43 @@ def pd_block(color):  # function of proportional–derivative controller for blo
     global direction, K_X, K_Y, frame, time_red, time_green, block
 
     if color == 'green':  # getting the contours depending on the color
-        countors = block.find_contours(to_draw=DRAW, color=(0, 255, 0), min_area=1000)
+        countors = block.find_contours(to_draw=DRAW, color=(0, 255, 0), min_area=600)
     elif color == 'red':
-        countors = block.find_contours(1, DRAW, min_area=1000, red_dop=1)
+        countors = block.find_contours(1, DRAW, min_area=600, red_dop=1)
     else:
-        print('color erorr')
+        print('color error')
         return -1  # if the color is not right, return -1
 
     if countors:
         countors = max(countors, key=cv2.contourArea)  # if there is contours, getting the biggest of them
         x, y, w, h = cv2.boundingRect(countors)  # getting the coordinates of the contour
-        x = (2 * x + w) // 2
-        y = y + h
+        x_ctr = x + w // 2 
+        y_btm = y + h
 
-        if color == 'red':  # defining the needed coordinate, depending on the color
-            time_red = time.time()
-            x_tar = 0
-        elif color == 'green':
-            time_green = time.time()
-            x_tar = block.x_2 - block.x_1
-        else:
-            print('color erorr')
-            return -1
-
-        e_x = round((x_tar - x) * K_X, 3)  # error for x coordinate
-        e_y = round(y * K_Y, 3)  # error for y coordinate
-        e_block = int(abs(e_y) + abs(e_x))  # getting the error for both coordinates
-
+        # If the color is green, the target X coordinate should be to the left edge of the rectangle
         if color == 'green':
-            if direction == 'wise':
-                e_block = int(e_block * -1.5)
-            else:
-                e_block = int(e_block * -1.8)
-        if color == 'red':
-            if direction == 'wise':
-                e_block = int(e_block * 1.25)
+            time_green = time.time()
+            x_tgt = block.x_2 - block.x_1 # This represents the right edge of the rectangle - X coordinate would be 560 (as measured by X2 being 600 - X1 being 40)
+        elif color == 'red':  # If the color is red, the target X coordinate should be to the right edge of the rectangle
+            time_red = time.time()
+            x_tgt = 0 # This represents the left edge of the rectangle - X coordinate would be 0
+
+        err_x = round((x_tgt - x_ctr) * K_X, 3)  # error for x coordinate
+        if color == 'green': # error for y coordinate
+            err_y = round((y_btm - 50) * K_Y, 3)
+        elif color == 'red':
+            err_y = round((100 - y_btm) * K_Y, 3)
+        err_block = int(err_y + err_x)  # getting the error for both coordinates
+                
+        print(f'color: {color}, x: {x}, y: {y}, w: {w}, h: {h}, x_tgt: {x_tgt}, x_ctr: {x_ctr}, y_btm: {y_btm}, err_x: {err_x}, err_y: {err_y}, err_block: {err_block}')
         if color == 'green':  # printing the error on the image
-            frame = cv2.putText(frame, str(e_block), (20, 60),
+            frame = cv2.putText(frame, str(err_block), (20, 60),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
         else:
-            frame = cv2.putText(frame, str(e_block), (20, 90),
+            frame = cv2.putText(frame, str(err_block), (500, 60),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
-        return e_block  # returning the erorr
+        return err_block  # returning the error
 
     return -1  # if there's no blocks in the area, return -1
 
@@ -299,6 +306,7 @@ def restart():  # function for resetting all the variables
 
     start_flag = False
     stop_flag = False
+    reverse_flag = False
     pause_flag = False
     flag_left = False
     flag_right = False
@@ -346,6 +354,7 @@ time_stop = time.time()  # for stopping the robot
 timer_flag = False  # for resetting other variables only once
 start_flag = False
 stop_flag = False  # for stopping the robot
+reverse_flag = False
 pause_flag = False  # for pausing the robot
 flag_left = False  # for tracking turns to the left
 flag_right = False  # for tracking turns to the right
@@ -360,12 +369,9 @@ print("Heyyy....")
 cv2.startWindowThread()
 
 picam2 = Picamera2()
-picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (800,600)}))
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640,480)}))
 picam2.start()
 
-# robot = Rapi.RobotAPI(flag_serial=False)  # initializing object needed to manage the camera
-# robot.set_camera(100, 640, 480)  # setting up the camera
-# frame = robot.get_frame(wait_new_frame=1)
 frame = picam2.capture_array("main")
 
 if frame is None:
@@ -378,6 +384,7 @@ line = Frames(frame, X1_LINE, X2_LINE, Y1_LINE, Y2_LINE, [BLUE_LOW, ORANGE_LOW],
 # lines
 # for detection blocks
 block = Frames(frame, X1_CUB, X2_CUB, Y1_CUB, Y2_CUB, [GREEN_LOW, RED_LOW_1, RED_LOW_2], [GREEN_UP, RED_UP_1, RED_UP_2])
+black_wall_stop = Frames(frame, X1_CUB+180, X2_CUB-180, Y1_CUB_BLACK, Y2_CUB, [BLACK_LOW], [BLACK_UP]) # Frame to see the wall in block Frame
 
 # variables for counting fps
 time_fps = time.time()
@@ -392,12 +399,14 @@ while True:  # main loop
     # ~ # resetting controlling influence and speed
     fps += 1
 #    frame = robot.get_frame(wait_new_frame=1)  # getting image from camera
-
+    
+    # ~ print("Left area: " + area_l + "Right area:" + area_r)
+    
     frame = picam2.capture_array("main")
     if frame is None:
         print("No image captured")
         break
-
+    
     mb_msg = ser.read_all().decode("utf-8")
     if mb_msg == 'go':
         if start_flag:
@@ -407,15 +416,51 @@ while True:  # main loop
         else:
             start_flag = True
             speed = DEFAULT_SPEED
-            ser.write("startt\n".encode('utf-8'))  # sending message to Microbit    
+            ser.write("startt\n".encode('utf-8'))  # sending message to Microbit 
+            
+    # ~ if mb_msg == 'quit':
+        # ~ ser.write('190200\n'.encode('utf-8'))
+        # ~ time.sleep(0.1)  
+        # ~ print("Ciao...")
+        # ~ ser.write('squitt\n'.encode('utf-8'))
+        # ~ time.sleep(0.1)
+        # ~ break 
 
     if (start_flag):
+        # find all the black contours in the stop wall frame
+        black_wall_stop.update(frame)
+        contours_stop = black_wall_stop.find_contours(0, DRAW, min_area=1000, color=(255, 255, 255))
+        if contours_stop:
+            contours_stop = max(contours_stop, key=cv2.contourArea)
+            area_stop = cv2.contourArea(contours_stop)
+            if area_stop > 1000:
+                speed = 0
+                reverse_flag = True
+                time_stop = time.time()
+                
+        while reverse_flag:
+            if time.time() - time_stop < 0.9:  # reversing for 0.5 seconds
+                speed = -50
+                
+                if direction == "CW":
+                    steer = 140
+                elif direction == "CCW":
+                    steer = 40
+   
+                mesg = str(steer + 100) + str(speed + 200) + '\n'  # forming the message for pyboard
+                print(mesg)
+                ser.write(mesg.encode('utf-8'))  # sending message to pyboard
+            
+            else:
+                reverse_flag = False
+                speed = DEFAULT_SPEED       
+        
         block.update(frame)  # updating block area
 
         u_red = pd_block('red')  # getting controlling influence for red blocks
         u_green = pd_block('green')  # getting controlling influence for green blocks
         if u_green != -1 or u_red != -1:
-            steer = 125 + max(u_green, u_red, key=abs)  # if there are blocks, counting final controlling influence
+            steer = 90 + max(u_green, u_red, key=abs)  # if there are blocks, counting final controlling influence
 
         # if there are no blocks, the robot will drive between walls
         else:
@@ -437,7 +482,7 @@ while True:  # main loop
                     blue += 1
                     if blue == 1 and orange == 0:
                         time_speed = time.time()
-                    print(f'blue: {blue} --- orange: {orange}')
+                    print(f'direction: {direction} --- blue: {blue} --- orange: {orange}')
                     time_blue = time.time()  # resetting timer for blue lines
                     tim = time.time()  # resetting timer for stopping
                 flag_line_blue = True
@@ -455,7 +500,7 @@ while True:  # main loop
                     if orange == 1 and blue == 0:
                         time_speed = time.time()
                     time_orange = time.time()
-                    print(f'orange: {orange} --- blue: {blue}')
+                    print(f'direction: {direction} --- orange: {orange} --- blue: {blue}')
                     tim = time.time()
                 flag_line_orange = True
         else:
@@ -489,12 +534,7 @@ while True:  # main loop
         mesg = str(steer + 100) + str(speed + 200) + '\n'  # sending message to pyboard
         # print(mesg)
         ser.write(mesg.encode('utf-8'))  # sending message to pyboard
-
-    if mb_msg == 'quit':
-        ser.write('190200\n'.encode('utf-8'))
-        print("Ciao...")
-        break       
-
+    
     if DRAW:
         cv2.imshow("Video Frame", frame)
 

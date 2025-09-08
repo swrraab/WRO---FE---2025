@@ -39,24 +39,17 @@ input.on_button_pressed(Button.A, on_button_pressed_a)
 def on_button_pressed_b():
     basic.pause(100)
     serial.write_string("quit")
-    basic.show_leds("""
-        # . . . #
-        . # . # .
-        . . # . .
-        . # . # .
-        # . . . #
-        """)    
     
 input.on_button_pressed(Button.B, on_button_pressed_b)
 
-# def on_forever()
-while True:
 
+# def on_forever():
+while True:
     try:
         # Read serial uart data from Raspberry Pi
         data_in = serial.read_until(serial.delimiters(Delimiters.NEW_LINE))
         
-        # Depending on the feedback from the R-Pi actions, display 
+        # Depending on the feedback from the R-Pi actions, display
         # patterns on the screen to indicate car status
         if (data_in[0] == "s"):
             if data_in == "startt":
@@ -83,34 +76,14 @@ while True:
                     . . . . #
                     # # # # .
                     """)
-                
-            # These patterns were meant to count laps, but they 
-            # didn't work properly, so they are never actually used
-            elif data_in == "s11111":                
+            elif data_in == "squitt":
                 basic.show_leds("""
-                    # # # # #
-                    . . . . .
-                    . . . . .
-                    . . . . .
-                    . . . . .
-                    """)
-            elif data_in == "s22222":
-                basic.show_leds("""
-                    . . . . .
-                    . . . . .
-                    # # # # #
-                    . . . . .
-                    . . . . .
-                    """)
-            elif data_in == "s33333":
-                basic.show_leds("""
-                    . . . . .
-                    . . . . .
-                    . . . . .
-                    . . . . .
-                    # # # # #                
-                    """)
-        
+                    # . . . #
+                    . # . # .
+                    . . # . .
+                    . # . # .
+                    # . . . #
+                    """)       
         else:
             # decode the input data to separate servo turn degrees, and motor speed values
             deg, speed = int(data_in[:3])-100, int(data_in[3:6])-200
@@ -118,18 +91,24 @@ while True:
             # Send turn angle to servo
             pins.servo_write_pin(AnalogPin.P0, deg)
 
-            # Send speed as PWM value to the 9v DC motor
-            mShield.extend_pwm_control(mShield.PwmIndex.S4, speed)
+            if speed < 0:
+                # Send speed as PWM value to the 9v DC motor                
+                mShield.extend_pwm_control(mShield.PwmIndex.S4, 0)
+                mShield.extend_pwm_control(mShield.PwmIndex.S3, abs(speed))
+
+            else:
+                # Send speed as PWM value to the 9v DC motor               
+                mShield.extend_pwm_control(mShield.PwmIndex.S3, 0)
+                mShield.extend_pwm_control(mShield.PwmIndex.S4, speed)
         
     except:
         basic.show_leds("""
             # . . . #
             . . . . .
-            . . . . .
+            . . # . .
             . . . . .
             # . . . #
             """)
         pass
 
 # basic.forever(on_forever)
-
