@@ -1,10 +1,9 @@
 # **2025 WRO Future Engineers Competition** 
 # Team **Pink Boba Pearls** 🌸🧋🫧
-This repository is for the 2025 WRO Future Engineeers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
+This repository is for the 2025 WRO Future Engineers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
-1. `docs` - Contains the Engineering Documentation
-2. `models` - Contains STL files we used for our 3D prints 
+1. `models` - Contains STL files we used for our 3D prints 
 2. `other` - Contains miscellanous files used for README.md
 3. `schemes` - Contains our connection schematic and power distribution schematic
 4. `src` - Contains our source code 
@@ -402,10 +401,12 @@ else:
 ### Defining important global constants and variables
 
 **HSV color thresholds**
+
 These define which pixels belong to a given color range. HSV is used because it’s more reliable than RGB in challenging light conditions where the Hue of a color falls within a specific range. An upper range and lower range are defined to create a mask which filters these colors
 * **Black** - for walls and lines.
 * **Green and Red** - for block detection.
 * **Blue and Orange** - for line detection
+
 We used a HSV color palette and converted the actual HSV values to OpenCV values (to be contained within the 0-255 range) using the below formula
 * **H (Hue)** - 0 to 360 values converted to 0-180 values by dividing by 2
 * **S (Saturation)** - 0-100 values converted to 0-255 values by multiplying by 2.55
