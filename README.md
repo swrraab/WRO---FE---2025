@@ -3,19 +3,20 @@
 This repository is for the 2025 WRO Future Engineers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
-1. [**`models`**](#/models) - Contains STL files we used for our 3D prints 
-2. `other` - Contains miscellanous files used for README.md
-3. `schemes` - Contains our connection schematic and power distribution schematic
-4. `src` - Contains our source code 
-5. `t-photos` - Contains team photos
-6. `v-photos` - Contains vehicle photos
-7. `videos` - Contains links to vehicle demo youtube videos
+1. [**`models`**](/models) - Contains STL files we used for our 3D prints 
+2. [**`other`**](/other) - Contains miscellanous files used for README.md
+3. [**`schemes`**](/schemes) - Contains our connection schematic and power distribution schematic
+4. [**`src`**](/src) - Contains our source code 
+5. [**`t-photos`**](/t-photos) - Contains team photos
+6. [**`v-photos`**](/v-photos) - Contains vehicle photos
+7. [**`videos`**](/videos) - Contains links to vehicle demo youtube videos
 
+---
 
 # Table of Contents - Engineering Documentation
 * [**The Problem**](#the-problem)
 * [**The Idea**](#the-idea)
-* [**Chassis**](# Chassis)
+* [**Chassis**](#chassis)
 	* [**Iteration 1**](#iteration-1)
 	* [**Iteration 2**](#iteration-2)
 	* [**Iteration 3 - Final**](#iteration-3---final)
@@ -629,7 +630,7 @@ Below section explains how to load each program on to their respective hardwares
 * The instructions to load this program is relatively easier because we followed the simpler method by accessing https://makecode.microsoft.org using the Chrome browser on the Raspberrry Pi (or any browser on your laptop). There are alternatives to use the Thonny Python editor or Visual Studio code, but we found it too tedious just to get the Microbit connected to take the program. 
 * Open a new Python program on makecode by clicking on **New Project**. Give it a name and select **Python Only** in the code options drop-down. Then click on **Create** button.
 ![Creating a new Python program on makecode](/other/image.png)
-* When the program is open, copy the entire content of [`pi2mb_motors_control.py`](/src/pi2mb_motors_control.py) from the `src` folder, on to the new Python program on makecode.
+* When the program is open, copy the entire content of [`pi2mb_motors_control.py`](/src/pi2mb_motors_control.py) from the [`src`](/src) folder, on to the new Python program on makecode.
 * Click on **Download** button to deploy the binary code to Microbit. You will hear an audible beep when the program is loaded to indicated the Microbit has successfully received the code (***Note:*** The audible beep is not a default behavior. We included the beep as a way for the Microbit to convey its readiness everytime it starts or is reset)
 * That is all! When connected to the Raspberry Pi over USB cable (as shown in the [schematic](/schemes/WRO%20Future%20Engineeers%202025%20-%20Component%20Schematic.png) and powered on, the program will be ready to transmit to and receive data from the Raspberry Pi and move your car. 
 
