@@ -1,6 +1,6 @@
 # **2025 WRO Future Engineers Competition** 
 # Team **Pink Boba Pearls** 🌸🧋🫧
-This repository is for the 2025 WRO Future Engineers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
+This repository is for the 2025 WRO Future Engineers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science and space 
 
 This repository has the below folders
 1. [**`models`**](/models) - Contains STL files we used for our 3D prints 
@@ -50,14 +50,12 @@ Additionally, there were constraints imposed on the field setup, size of the rob
 # The Idea
 We are a new team, and we started late in June 2025, so we need something that we can build that suits our abilities
 
-
 To be successful, we will need to go with:
 1. A simple chassis - Either buy one, or modify an existing chassis
 2. Use Raspberry Pi to be the brain, and a camera with OpenCV library to be the eyes
 3. Use Arduino or Microbit for micro controller
 4. Use ultrasonic sensor, color sensor and IMU sensor as needed
 5 Use simple power management setup to distribute power to micro processor, micro controller and the DC Motor
-
 
 This journal documents our journey and the decisions we made for each component as we iterated to the final working product
 
@@ -81,7 +79,6 @@ For the first iteration, we started with a simple chassis purchased from Amazon
 
 ## Iteration 2
 We experimented with a RC car that we got from a thrift store after removing its top and control circuitry
-
 
 ### Advantages
 * The chassis was just available. Nothing to build. It was also very stable and not flimsy
@@ -113,11 +110,9 @@ Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber in
     * Initially we tried to 3D print our own design.
     * Later, we found a 3D file that we found on Thingiverse that worked better for our purpose
 
-
 * The BLDC motor to the drive axle
 	* We 3D printed a custom mount for the BLDC motor that fits the chassis dimensions
 	* We also 3D printed a connector to connect the motor shaft to the Lego axle to which the drive gear was attached
-
 
 * Wide angle camera.
     * This is to attach to the Lego chassis, and to hold the camera at a specific angle.
@@ -126,7 +121,6 @@ Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber in
 ---
 
 # System control
-
 
 This section explains the control system setup i.e, the raspberry pi, the camera, the microbit and the shield, the motor driver, the motors themselves, and the design choices that led to selection of each component
 
@@ -139,11 +133,9 @@ We originally wanted to connect a few sensors and motors to Arduino and test it.
     * IMU for accurate turns
 * We tested with one Ultrasonic sensor and one color sensor in iteration 2 of our chassis and we were successful.
 
-
 ### Iteration 2 - Computer Vision
 * In our subsequent research we were able to find inspiration to do it all with just one camera. We tested it out and found success - as explained in the program logic section
 * Since we had success with using the camera alone, we removed all the sensors from the design and decided to go with only camera vision
-
 
 ## Mobility Control
 ### Drive motor
@@ -274,25 +266,24 @@ The Microbit itself did not require separate power since it was powered by the s
 # Bill of Materials
 We experimented with many boards and components before settling on our final design. The below list is for the final design only.
 
-
 | Part | Reference Cost - As of Sep 1, 2025 - Taxes not included | Purchase Link for Future Reference |
 | ------------ | ------------: | ------------ |
 | **Micro:Bit** |  |  |
-| Micro:Bit | $48.59  |  https://www.amazon.ca/KEYESTUDIO-MICROBIT-V2-2-KIT-Beginners/dp/B0BNKTGGB7
-| Micro:Bit Motor Shield (DC Motor and Servo) | $16.00 | https://www.amazon.ca/dp/B0F24V8X31 |
+| Micro:Bit | $48.59  |  [amazon.ca](https://www.amazon.ca/KEYESTUDIO-MICROBIT-V2-2-KIT-Beginners/dp/B0BNKTGGB7) |
+| Micro:Bit Motor Shield (DC Motor and Servo) | $16.00 | [amazon.ca](https://www.amazon.ca/dp/B0F24V8X31) |
 | **Raspberry Pi**  |   |   |
-| Raspberry Pi 4  | $62.95  | https://www.pishop.ca/product/raspberry-pi-4-model-b-2gb/  |
-| Sainsmart Wideangle 5MP Camera 160 degree FoV  | $16.99  | https://www.amazon.ca/SainSmart-Fish-Eye-Camera-Raspberry-Arduino/dp/B00N1YJKFS  |
+| Raspberry Pi 4  | $62.95  | [pishop.ca](https://www.pishop.ca/product/raspberry-pi-4-model-b-2gb/)  |
+| Sainsmart Wideangle 5MP Camera 160 degree FoV  | $16.99  | [amazon.ca](https://www.amazon.ca/SainSmart-Fish-Eye-Camera-Raspberry-Arduino/dp/B00N1YJKFS)  |
 | **Other Accessories to build the car**  |   |   |
-| 9v-12 Battery bank  | $41.79  | https://www.amazon.ca/dp/B01M7Z9Z1N  |
-| 12V to 5V Step-down converter  | $5.28  | https://www.aliexpress.com/item/1005006655110785.html  |
-| L298N motor driver  | $11.99  | https://www.amazon.ca/Controller-Module-Bridge-Stepper-Arduino/dp/B0D8G2PZBB  |
-| SG90 Servo motors  | $19.99   | https://www.amazon.ca/dp/B0CP98TZJ2  |
-| Short USB to USB-C cable  | $10.99  | https://www.amazon.ca/etguuds-Charging-Charger-Braided-Compatible/dp/B08933P982  |
-| Short USB to Micro-USB cable  | $8.99  | https://www.amazon.ca/Micro-CableCreation-High-Speed-Triple-Shielded/dp/B013G4D2OM  |
+| 9v-12 Battery bank  | $41.79  | [amazon.ca](https://www.amazon.ca/dp/B01M7Z9Z1N)  |
+| 12V to 5V Step-down converter  | $5.28  | [aliexpress.com](https://www.aliexpress.com/item/1005006655110785.html)  |
+| 12V Brushless DC motor with Encoder  | $17.43  | [robotshop.ca](https://ca.robotshop.com/products/e-s-motor-24mm-brushless-dc-gear-motor-12v-130rpm?qd=7ce66187395fa1fb2558d4bb6c21548c)  |
+| SG90 Servo motors  | $19.99   | [amazon.ca](https://www.amazon.ca/dp/B0CP98TZJ2)  |
+| Short USB to USB-C cable  | $10.99  | [amazon.ca](https://www.amazon.ca/etguuds-Charging-Charger-Braided-Compatible/dp/B08933P982)  |
+| Short USB to Micro-USB cable  | $8.99  | [amazon.ca](https://www.amazon.ca/Micro-CableCreation-High-Speed-Triple-Shielded/dp/B013G4D2OM)  |
 | Lego Parts to build the chassis  |   |   |
 | 3D printed parts to complete the chassis  |   |   |
-| **Total**  | **\$251.44**  |   |
+| **Total**  | **\$256.88**  |   |
 
 ---
 
