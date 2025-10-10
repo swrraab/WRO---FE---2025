@@ -469,141 +469,46 @@ Uses a **PD controller** to make the steering smooth, not jerky. The logic looks
 * If the right wall looks closer → steer left
 * If the left wall looks closer → steer right.
 * If both are equal → go straight.
-* 
+
 ![Wall detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/wall%20detection%20frame.png)
 
 ### pd_block() function
-Looks for either a green block or a red block in a predefined region of the camera frame.
-If a block is found, it calculates **how far** the block is from the desired position.
-It then produces a control signal (e_block) that tells the car how much to adjust its steering when approaching the block.
-For red blocks, the “target x” is the left side of the detection zone.
-For green blocks, the “target x” is the right side of the detection zone.
-This means the car is supposed to go toward the left for red blocks and toward the right for green blocks.
-e_x: how far the block’s x-position is from where it should be compared to "target X"
-e_y: how far down the block is (so closer blocks give higher y).
-These are scaled by tuning constants K_X and K_Y.
-Both are combined into one error signal e_block. This makes the car steer differently depending on the block’s color and the car’s driving direction.
+* Looks for either a green block or a red block in a predefined region of the camera frame.
+* If a block is found, it calculates **how far** the block is from the desired position.
+* It then produces a control signal (e_block) that tells the car how much to adjust its steering when approaching the block.
+	* For red blocks, the “target x” is the left side of the detection zone.
+	* For green blocks, the “target x” is the right side of the detection zone.
+	* This means the car is supposed to go toward the left for red blocks and toward the right for green blocks..
+	* These are scaled by tuning constants K_X and K_Y.
+	* Both are combined into one error signal e_block. This makes the car steer differently depending on the block’s color and the car’s driving direction.
 
 ![Color block detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/block%20detection%20frame.png)
 
 ### restart() function
-This function is used to reset all the variables including the flags and timers. This is used when the car needs to stop and start a fresh run without exiting the main loop.
+* This function is used to reset all the variables including the flags and timers. 
+* This is used when the car needs to stop and start a fresh run without exiting the main loop.
 
+### Main code (including the main loop while True)
 
-Main code (including the main loop while True)
-Serial Connection
-Opens a USB serial connection to the Microbit at 115200 baud rate.
-Flushes buffers and confirms the connection is open.
-This serial connection is used in the main loop to receive start / stop signals from the microbit (ser.read_all()) and to send steering + speed values to the microbit (ser.write()).
-Variables & Flags
-Initializes counters for detected lines (orange, blue).
-Steering, speed, and turn direction values (steer, speed, direction, etc.).
-Timers for different actions (line detection, blocks detection, turning, stopping, etc).
-Flags to track car states:
-start_flag, stop_flag, reverse_flag, pause_flag
-Line detection flags (flag_line_blue, flag_line_orange)
-Camera Setup
-Starts Picamera2 with a 640×480 preview stream.
-Captures the initial frame.
-Creates Frames objects for different regions:
-pd_r and pd_l: detect black walls (right & left).
-line: detect blue/orange crossing lines.
-block: detect green/red blocks.
-black_wall_stop: detect walls in front (stop condition).
-Main Loop (while True)
+* Initialize image areas to detect walls and color blocks
+* Main Loop (while True)
+	* If message is "go" from the Microbit, execute the below logic
+   	* At the end of each loop, the calculated steering values are sent to Microbit for turning
+   	* DC Motor control PWM values are handled by the Raspberry Pi
+	
+* Anytime during the run, stop and reverse if Wall is detected
 
+* Checks for red or green blocks:
+	* If block found → calculate steering correction for red and green blocks (u_red or u_green) and determine which value is most influential and use that as the steering value.
+* If no red or green blocks are found in the frame (as in Open Challenge condition)
+	* Update the wall detection areas on either edges and use the wall-following (pd()) function to calculate the steering values.
 
-Get New Frame
-frame = picam2.capture_array("main")
-if frame is None:
-    print("No image captured")
-    break
-Takes a snapshot from the PiCamera2.
-If no frame → stop the loop.
-Start/Stop Command Handling
-mb_msg = ser.read_all().decode("utf-8")
-if mb_msg == 'go':
-    if start_flag:
-        restart()
-        speed = 0
-        ser.write("stoppp\n".encode('utf-8'))
-    else:
-        start_flag = True
-        speed = DEFAULT_SPEED
-        ser.write("startt\n".encode('utf-8'))
-Reads Microbit messages.
-If message is "go":
-If already started → stop by setting speed to 0.
-Otherwise → start car by setting speed to the default speed.
-Stop and reverse if Wall is detected
-black_wall_stop.update(frame)
-contours_stop = black_wall_stop.find_contours(...)
-if contours_stop:
-    area_stop = cv2.contourArea(max(contours_stop, key=cv2.contourArea))
-    if area_stop > 1000:
-        speed = 0
-        reverse_flag = True
-        time_stop = time.time()
-Looks for a big black wall in front of the car.
-If found → stop and set reverse_flag.
-while reverse_flag:
-    if time.time() - time_stop < 0.9:  # reversing for 0.5 seconds
-        speed = -50
-        if direction == "CW":
-            steer = 140
-        elif direction == "CCW":
-            steer = 40
-Then inside the while reverse_flag: loop:
-Car goes backward briefly (speed = -50).
-Turns slightly (different steering if CW or CCW).
-After reversing time ends → return to normal speed.
-Block Detection (Red/Green)
-block.update(frame)
-u_red = pd_block('red')
-u_green = pd_block('green')
-if u_green != -1 or u_red != -1:
-    steer = 90 + max(u_green, u_red, key=abs)
-else:
-    pd_r.update(frame)
-    pd_l.update(frame)
-    steer = pd()
-Updates block-detection area.
-Checks for red or green blocks:
-If block found → calculate steering correction for red and green blocks (u_red or u_green) and determine which value is most influential and use that as the steering value.
-If no red or green blocks are found in the frame (as in Open Challenge condition) → Update the wall detection areas on either edges and use the wall-following (pd()) function to calculate the steering values.
-Line Detection (Blue/Orange)
-line.update(frame)
-contours_blue = line.find_contours(0, ...)
-contours_orange = line.find_contours(1, ...)
-Detects blue and orange line markers on the floor.
-Each line crossing is counted.
-Also determines car’s driving direction based on the line color that is detected in the very first section crossing:
-Blue line → counter-clockwise (CCW).
-Orange line → clockwise (CW).
+* Detects blue and orange line markers on the floor and keep count
+* Also determines car’s driving direction based on the line color that is detected in the very first section crossing:
+	* Blue line → counter-clockwise (CCW).
+	* Orange line → clockwise (CW).
 
-
-
-
-The direction value is used for navigation and to decide when to stop.
-Stop Condition
-if (max(orange, blue) > 11 and time.time() - tim > 1.2) or stop_flag:
-    ...
-If car crosses 12+ lines OR stop flag is set :
-Briefly brake (reverse for 0.3s).
-Then set speed = 0 to force the car to stop completely.
-FPS Calculation
-if time.time() - time_fps > 1:
-    time_fps = time.time()
-    fps_last = fps
-    fps = 0
-Counts frames per second (useful for performance monitoring).
-Send Commands to Microbit
-if not stop_flag:
-    frame = cv2.putText(frame, ' '.join([str(speed), str(steer), str(fps_last)]), ...)
-    mesg = str(steer + 100) + str(speed + 200) + '\n'
-    ser.write(mesg.encode('utf-8'))
-Sends steering + speed command to Microbit.
-Also overlays speed/steering/fps text on the video frame.
+* The count of lines is used for navigation and to decide when to stop.
 
 
 ## Loading the software on to the hardware
@@ -643,12 +548,3 @@ Below section explains how to load each program on to their respective hardwares
 * When the program is open, copy the entire content of [`pi2mb_motors_control.py`](/src/pi2mb_motors_control.py) from the [`src`](/src) folder, on to the new Python program on makecode.
 * Click on **Download** button to deploy the binary code to Microbit. You will hear an audible beep when the program is loaded to indicated the Microbit has successfully received the code (***Note:*** The audible beep is not a default behavior. We included the beep as a way for the Microbit to convey its readiness everytime it starts or is reset)
 * That is all! When connected to the Raspberry Pi over USB cable (as shown in the [schematic](/schemes/WRO%20Future%20Engineeers%202025%20-%20Component%20Schematic.png) and powered on, the program will be ready to transmit to and receive data from the Raspberry Pi and move your car. 
-
-
-
-
-
-
-
-
-
