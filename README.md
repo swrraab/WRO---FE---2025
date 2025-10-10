@@ -48,7 +48,7 @@ Additionally, there were constraints imposed on the field setup, size of the rob
 ---
 
 # The Idea
-We are a new team, and we started late in June 2025, so we need something that we can build that suits our abilities
+We are a new team, and we needed to build a car that suits our abilities
 
 To be successful, we will need to go with:
 1. A simple chassis - Either buy one, or modify an existing chassis
@@ -63,6 +63,8 @@ This journal documents our journey and the decisions we made for each component 
 
 # Chassis
 The chassis underwent 3 iterations to the final product
+
+![chassis iterations](https://github.com/swrraab/WRO---FE---2025/blob/main/other/Car_evolution_iterations.png)
 
 ## Iteration 1
 For the first iteration, we started with a simple chassis purchased from Amazon
@@ -106,17 +108,21 @@ Finally, we settled on a Lego technic chassis that we built ourselves and it wor
 
 # 3D printed parts
 Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber infused PLA to mount the following
-* The servo motor to the front wheels for steering.
+* **The servo motor to the front wheels for steering**
     * Initially we tried to 3D print our own design.
-    * Later, we found a 3D file that we found on Thingiverse that worked better for our purpose
+    * Later, we found a 3D file that we found on [Thingiverse](https://www.thingiverse.com/thing:4303585) that worked better for our purpose
+![Servo Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/s90%20Servo%20Mount%20v1.PNG)
 
-* The BLDC motor to the drive axle
+* **The BLDC motor to the drive axle**
 	* We 3D printed a custom mount for the BLDC motor that fits the chassis dimensions
 	* We also 3D printed a connector to connect the motor shaft to the Lego axle to which the drive gear was attached
 
-* Wide angle camera.
+* **Wide angle camera**
     * This is to attach to the Lego chassis, and to hold the camera at a specific angle.
     * This design which connects to a standard Lego Technic beam allowed us to experiment with various heights and mount angles before we got it right.
+  
+![Camera Mount Extension](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount%20Extension.png)
+![Camera Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount.png)
 
 ---
 
@@ -132,10 +138,13 @@ We originally wanted to connect a few sensors and motors to Arduino and test it.
     * Color sensors for line detection.
     * IMU for accurate turns
 * We tested with one Ultrasonic sensor and one color sensor in iteration 2 of our chassis and we were successful.
+![Iteration 1 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/schematic%20early.png)
 
 ### Iteration 2 - Computer Vision
 * In our subsequent research we were able to find inspiration to do it all with just one camera. We tested it out and found success - as explained in the program logic section
 * Since we had success with using the camera alone, we removed all the sensors from the design and decided to go with only camera vision
+
+![Iteration 2 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Component_Schematic.png)
 
 ## Mobility Control
 ### Drive motor
@@ -260,6 +269,10 @@ Initially, as we were testing vision, all the components were powered with a wal
 We used a 12V to 5V step-down power converter to supply 5V power to the Raspberry Pi and the Microbit shield.
 
 The Microbit itself did not require separate power since it was powered by the shield.
+
+![Power Distribution](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Power_Management.png)
+
+![Circuit Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Circuit_Schematic.png)
 
 ---
 
@@ -387,11 +400,11 @@ else:
 * When the number of lines counted is less than 12
 * Look for red or green blocks in the center of the image up to the bottom of the image.
 * If red or green block is found, find the biggest blocks respectively
-* Determine the direction of turn (left for green blocks; right for Red blocks)
-* Apply proportional logic to determine the amount of turn by evaluating the X and Y coordinates of the block (nearer blocks will need tighter turns)
-* When the turn values are determined for both red and green blocks, use the biggest turn value since that would apply to the nearest block
+	* Determine the direction of turn (left for green blocks; right for Red blocks)
+	* Apply proportional logic to determine the amount of turn by evaluating the X and Y coordinates of the block (nearer blocks will need tighter turns)
+	* When the turn values are determined for both red and green blocks, use the biggest turn value since that would apply to the nearest block
 * If red or green block is not found (as when making turns or in open challenge conditions) look for the amount of black on either edges of the lower part of the image received from the camera
-* Use proportional derivative logic to determine the amount of steering. Error is the difference in the black areas of right and left walls. Greater black on the right side will steer the car to the left, and vice versa
+	* Use proportional derivative logic to determine the amount of steering. Error is the difference in the black areas of right and left walls. Greater black on the right side will steer the car to the left, and vice versa
 * During the laps, if a wall or block is detected to be too close, make a small reverse movement and reattempt.
 * At the end of 3 laps, the car will attempt a parallel parking manuever by reverse parking into the parking area, guided by the camera and the TOF200C sensor
 ---
