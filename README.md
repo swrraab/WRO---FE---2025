@@ -3,7 +3,7 @@
 This repository is for the 2025 WRO Future Engineers competition. We are a team of 2 high-school girls from Ontario, Canada 🇨🇦 We are passionate about all things engineering - specifically computer science 💻 and space 🚀 
 
 This repository has the below folders
-1. `models` - Contains STL files we used for our 3D prints 
+1. [**`models`**](#/models) - Contains STL files we used for our 3D prints 
 2. `other` - Contains miscellanous files used for README.md
 3. `schemes` - Contains our connection schematic and power distribution schematic
 4. `src` - Contains our source code 
@@ -18,7 +18,7 @@ This repository has the below folders
 * [**Chassis**](# Chassis)
 	* [**Iteration 1**](#iteration-1)
 	* [**Iteration 2**](#iteration-2)
-	* [**Iteration 3**](#iteration-3---final)
+	* [**Iteration 3 - Final**](#iteration-3---final)
 * [**3D printed parts**](#3d-printed-parts)
 * [**System control**](#system-control)
 	* [**To see or to sense?**](#to-see-or-to-sense?)
@@ -28,8 +28,8 @@ This repository has the below folders
 * [**Power Management**](#power-management)
 * [**Bill of Materials**](#bill-of-materials)
 * [**Program Logic for mobility control**](#program-logic-for-mobility-control)
-	* [**Microbit - pi2mb_motors_control.py**](#microbit---pi2mb_motors_control.py)
-	* [**Raspberry Pi - obs_ch.py**](#raspberry-pi---obs_ch.py)
+	* [**Microbit - pi2mb_motors_control.py**](#microbit---pi2mbmotorscontrolpy)
+	* [**Raspberry Pi - obs_ch.py**](#raspberry-pi---obschpy)
 	* [**Loading the software on to the hardware**](#loading-the-software-on-to-the-hardware)
 
 ---
