@@ -376,14 +376,6 @@ else:
 * **Potential Improvements:** Ideally, we would want to have a PD loop to ensure the steering turns are smooth, but with the Microbit and SG90 servo we don’t have a way to implement a closed loop feedback system. So, we had to forgo PD control at the component level and favor the implementation of PD control in the Raspberry Pi before it sends the values to the Microbit.
 ---
 
-
-
-
-
-
-
-
-
 ## Raspberry Pi - obs_ch.py
 ### Pseudo code for keeping the car between the walls and to avoid obstacles
 * Use the blue and orange lines to determine the direction of the lap (clockwise or counter clockwise) and to count if 3 laps have been achieved (by counting 12 lines of either color)
@@ -398,7 +390,16 @@ else:
 * During the laps, if a wall or block is detected to be too close, make a small reverse movement and reattempt.
 * At the end of 3 laps, the car will attempt a parallel parking manuever by reverse parking into the parking area, guided by the camera and the TOF200C sensor
 ---
-### Defining important global constants and variables
+### Important Libraries Used
+
+* **`Picamera2`** - This is to read images from the Sainsmart OV5647 camera connected to the Raspberry Pi
+* **`cv2`** - This is OpenCV library for image processing to determine relative position and size of objects seen by the camera
+* **`serial`** - To transmit servo control values to the Microbit over serial port
+* **`board`** - Provides a hardware abstraction layer for accessing the General Purpose Input/Output (GPIO) pins (in the context of Adafruit CircuitPython)
+* **`busio`** - Provides a standardized, high-level interface for interacting with various hardware communication protocols, I2C in this case (in the context of Adafruit CircuitPython)
+* **`adafruit_vl53l0x`** - Provides an user-friendly interface to interact with the VL53L0X Time-of-Flight (ToF) distance sensor
+
+### Defining important global constants and variable
 
 **HSV color thresholds**
 
@@ -414,31 +415,33 @@ We used a HSV color palette and converted the actual HSV values to OpenCV values
 
 **Regions of interest**
 We split the camera view into smaller zones, each with a specific purpose.
+
 _For block detection_
-Rectangle in the **center** of the image.
-Used to look for green/red blocks.
+* Rectangle in the **center** of the image.
+* Used to look for green/red blocks.
+  
 _For wall following (PD controller)_
-Used to make two rectangles:
-Left zone (pd_l) = from 0 to 30 along the X axis on the far left.
-Right zone (pd_r) = from 610 to 640 along the X axis on the far right
-Used to measure wall area left vs right.
-Both at the same height (220–480).
+* Used to make two rectangles:
+    * Left zone (pd_l) = from 0 to 30 along the X axis on the far left.
+    * Right zone (pd_r) = from 610 to 640 along the X axis on the far right
+    * Used to measure wall area left vs right.
+* Both at the same height (220–480).
+
 _For line counting_
-Small horizontal strip at the bottom of the frame.
-Used to detect black crossing lines (to count laps/checkpoints)
+* Small horizontal strip at the bottom of the frame.
+* Used to detect black crossing lines (to count laps/checkpoints)
 
 ---
 
 ### Frames class
 This is a helper class for working with specific regions of the camera image by dividing its camera view into regions (Frames), and each region specializes in finding a specific thing (wall, line, block).
-A `Frames` object = “a rectangular window” into one part of the camera image.
-It knows:
-**Where** to look (rectangle coordinates).
-**What color** to look for (HSV range).
-It can:
-Crop & process that rectangular window.
-Detect contours (outlined regions) of desired colors.
-
+* A `Frames` object = “a rectangular window” into one part of the camera image.
+* It knows:
+    * **Where** to look (rectangle coordinates).
+    * **What color** to look for (HSV range).
+* It can:
+    * Crop & process that rectangular window.
+    * Detect contours (outlined regions) of desired colors.
 
 ### pd() function
 Uses a **PD controller** to make the steering smooth, not jerky. The logic looks at how much wall is on the **left** vs **right**.
