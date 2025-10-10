@@ -469,6 +469,7 @@ Uses a **PD controller** to make the steering smooth, not jerky. The logic looks
 * If the right wall looks closer → steer left
 * If the left wall looks closer → steer right.
 * If both are equal → go straight.
+* 
 ![Wall detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/wall%20detection%20frame.png)
 
 ### pd_block() function
@@ -482,6 +483,7 @@ e_x: how far the block’s x-position is from where it should be compared to "ta
 e_y: how far down the block is (so closer blocks give higher y).
 These are scaled by tuning constants K_X and K_Y.
 Both are combined into one error signal e_block. This makes the car steer differently depending on the block’s color and the car’s driving direction.
+
 ![Color block detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/block%20detection%20frame.png)
 
 ### restart() function
