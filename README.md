@@ -9,7 +9,7 @@ This repository has the below folders
 4. [**`src`**](/src) - Contains our source code 
 5. [**`t-photos`**](/t-photos) - Contains team photos
 6. [**`v-photos`**](/v-photos) - Contains vehicle photos
-7. [**`videos`**](/videos) - Contains links to vehicle demo youtube videos
+7. [**`video`**](/video) - Contains links to vehicle demo youtube videos
 
 ---
 
