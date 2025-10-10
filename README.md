@@ -310,8 +310,9 @@ We experimented with many boards and components before settling on our final des
 * **Button B** sends "quit" to R-Pi (exit program).
 * **Raspberry Pi** to **Microbit** Serial Connection data transmission via USB which needs to be a 4 byte character including the delimiting newline (\n) character:
     * Sends **status codes ("str", "stp", etc.)** → Microbit shows icons.
-    * Sends **numeric codes (e.g., "120")** → Microbit drives servo angle.
-* Servo Motor is controlled using analog signals via the **Siyeenove mShield**
+    * Sends **servo angle value (e.g., "120")** → Microbit drives servo angle.
+* Servo Motor turn angle is controlled using analog signals on the P0 pin via the **Siyeenove mShield**
+
 ---
 ### Imports and Setup
 ```
@@ -322,12 +323,14 @@ import mShield
 * `microbit`: gives access to Microbit’s hardware (pins, buttons, display, etc.).
 * `music`: allows sounds to be played.
 * `mShield`: library for controlling the **Siyeenove motor shield** (PWM outputs for motors/servos).
+
 ---
 ### Startup Signal
 ```
 music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
 ```
 As soon as the Microbit is started or reset, it plays a tone to indicate the Microbit is active.
+
 ---
 ### Serial Communication Setup
 ```
@@ -335,7 +338,7 @@ serial.redirect_to_usb()
 serial.set_baud_rate(BaudRate.BAUD_RATE115200)
 serial.set_rx_buffer_size(4)
 ```
-* Setting up serial connection parameters. This is how the Microbit exchanges commands/data with the Raspberry Pi.
+* Serial connection parameters are initialized for Microbit to exchange commands/data with the Raspberry Pi.
 * Note the buffer size of 4. This means all the inputs received from the Raspberry Pi should be 4 characters including the newline character used a delimiter. The first 3 characters are the numerical value of the steering angle
 ---
 ### Default Values
@@ -382,7 +385,7 @@ if (data_in[0] == "s"):
 else:
     deg = int(data_in[:3])-100
 ```
-* If it’s not a status message, it’s a **control command** (numbers only).
+* If it’s not a status message, it’s a **servo control value** (numbers only).
 * The first 3 characters → servo angle (shifted by 100).
 * Example: `"150"` → servo = 150-100 = 50°
 
@@ -463,10 +466,10 @@ This is a helper class for working with specific regions of the camera image by 
 
 ### pd() function
 Uses a **PD controller** to make the steering smooth, not jerky. The logic looks at how much wall is on the **left** vs **right**.
-If the right wall looks closer → steer left
-If the left wall looks closer → steer right.
-If both are equal → go straight.
-
+* If the right wall looks closer → steer left
+* If the left wall looks closer → steer right.
+* If both are equal → go straight.
+![Wall detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/wall%20detection%20frame.png)
 
 ### pd_block() function
 Looks for either a green block or a red block in a predefined region of the camera frame.
@@ -479,6 +482,7 @@ e_x: how far the block’s x-position is from where it should be compared to "ta
 e_y: how far down the block is (so closer blocks give higher y).
 These are scaled by tuning constants K_X and K_Y.
 Both are combined into one error signal e_block. This makes the car steer differently depending on the block’s color and the car’s driving direction.
+![Color block detection frame](https://github.com/swrraab/WRO---FE---2025/blob/main/other/block%20detection%20frame.png)
 
 ### restart() function
 This function is used to reset all the variables including the flags and timers. This is used when the car needs to stop and start a fresh run without exiting the main loop.
