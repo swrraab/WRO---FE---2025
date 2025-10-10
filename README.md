@@ -9,20 +9,24 @@ This repository has the below folders
 4. `src` - Contains our source code 
 5. `t-photos` - Contains team photos
 6. `v-photos` - Contains vehicle photos
-7. `videos` - Contains links to vehicle demo youtube videos`
+7. `videos` - Contains links to vehicle demo youtube videos
+
+
+# Table of Contents - Engineering Documentation
+* [**The Problem**](#the-problem)
+* [**The Idea**](#the-idea)
 
 # The problem
 
-
 For WRO Future Engineers 2025, the challenge is to design an autonomous vehicle that can
-Complete 3 laps around an open course without incurring penalties
-Complete 3 laps around an obstacle courses without bumping into the red and green blocks, while navigating around them as per the rules
-Optionally start from a parking area at the start of the obstacle challenge
-Optionally parallel park in the parking area at the end of the obstacle challenge
-
+* Complete 3 laps around an open course without incurring penalties
+* Complete 3 laps around an obstacle courses without bumping into the red and green blocks, while navigating around them as per the rules
+* Optionally start from a parking area at the start of the obstacle challenge
+* Optionally parallel park in the parking area at the end of the obstacle challenge
 
 Additionally, there were constraints imposed on the field setup, size of the robot and the drive train and steering mechanisms that can be used.
 
+---
 
 # The Idea
 We are a new team, and we started late in June 2025, so we need something that we can build that suits our abilities
@@ -38,28 +42,22 @@ To be successful, we will need to go with:
 
 This journal documents our journey and the decisions we made for each component as we iterated to the final working product
 
-
+---
 # Chassis
 The chassis underwent 3 iterations to the final product
 
-
 ## Iteration 1
 For the first iteration, we started with a simple chassis purchased from Amazon
-
 
 ### Advantages
 * Light weight and easy to build
 * Allowed some level of customization to add 3D printed parts
 * Gained understanding of lack of fine steering control with DC motor (and its limitations)
 
-
-
-
 ### Disadvantages
 * Too flimsy - the structure can’t handle the weight of all the components, about 600 grams of it.
 * Underpowered - The small wheels with the gearing ratios with the DC motor did not allow for enough speed or enough torque to drive the weight
 * Steering was either fully to the left or right with the DC motor. Finer direction control was not possible - although we could’ve replaced it with a servo motor
-
 
 ## Iteration 2
 We experimented with a RC car that we got from a thrift store after removing its top and control circuitry
@@ -71,30 +69,23 @@ Light weight
 * We could add 3D printed parts to it
 * Rubber wheels had good grip
 
-
 ### Disadvantages
 * The chassis was too wide at 15cms. It was hard to park where we needed it
 * DC drive motor based drive axle kept rolling and didn’t stop where we needed it to stop, unless we reversed the motor direction.
 * Steering was either left or right with the DC motor. Finer direction control was not possible - although we could’ve replaced it with a servo motor
 
-
-
-
 ## Iteration 3 - Final
 Finally, we settled on a Lego technic chassis that we built ourselves and it worked for us
-
 
 ### Advantages
 * Ability to customize as needed without having to 3D print many parts
 * Lego chassis allowed us to mount motors and camera with 3D printed attachment that are compatible with the Lego technic beam dimensions
 
-
 ### Disadvantages
 * The final chassis looks bulky. There is room for optimization
 * Heavier than the other 2 chassis at 900 gms, however it is still within allowed weight
 
-
-
+---
 
 # 3D printed parts
 Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber infused PLA to mount the following
