@@ -15,6 +15,24 @@ This repository has the below folders
 # Table of Contents - Engineering Documentation
 * [**The Problem**](#the-problem)
 * [**The Idea**](#the-idea)
+* [**Chassis**](# Chassis)
+	* [**Iteration 1**](#iteration-1)
+	* [**Iteration 2**](#iteration-2)
+	* [**Iteration 3**](#iteration-3---final)
+* [**3D printed parts**](#3d-printed-parts)
+* [**System control**](#system-control)
+	* [**To see or to sense?**](#to-see-or-to-sense?)
+	* [**Mobility Control**](#mobility-control)
+	* [**Choice of micro controller - Microbit**](#choice-of-micro-controller-microbit)
+	* [**Choice of SBC - Raspberry Pi**](#choice-of-sbc-raspberry-pi)
+* [**Power Management**](#power-management)
+* [**Bill of Materials**](#bill-of-materials)
+* [**Program Logic for mobility control**](#program-logic-for-mobility-control)
+	* [**Microbit - pi2mb_motors_control.py**](#microbit---pi2mb_motors_control.py)
+	* [**Raspberry Pi - obs_ch.py**](#raspberry-pi---obs_ch.py)
+	* [**Loading the software on to the hardware**](#loading-the-software-on-to-the-hardware)
+
+---
 
 # The problem
 
@@ -43,6 +61,7 @@ To be successful, we will need to go with:
 This journal documents our journey and the decisions we made for each component as we iterated to the final working product
 
 ---
+
 # Chassis
 The chassis underwent 3 iterations to the final product
 
@@ -103,14 +122,12 @@ Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber in
     * This is to attach to the Lego chassis, and to hold the camera at a specific angle.
     * This design which connects to a standard Lego Technic beam allowed us to experiment with various heights and mount angles before we got it right.
 
-
-
+---
 
 # System control
 
 
 This section explains the control system setup i.e, the raspberry pi, the camera, the microbit and the shield, the motor driver, the motors themselves, and the design choices that led to selection of each component
-
 
 ## To see or to sense?
 ### Iteration 1 - Use of sensors
@@ -139,9 +156,7 @@ We originally wanted to connect a few sensors and motors to Arduino and test it.
 	* Inbuilt encoder for feedback
 	* Separate inputs for speed and direction control with PWM signals
 
-
 During the course of open and obstacle challenge runs, the motor runs at full speed - and it feels like it is not enough. Proportional speed control is employed only when getting out of parking and when parallel parking
-
 
 ### Steering Servo
 * Used SG90 180 degree servo motor with analog output from the Microbit.
@@ -149,21 +164,21 @@ During the course of open and obstacle challenge runs, the motor runs at full sp
     * 30 degree is the farthest right steering, limited by the code
     * 150 degrees is the farthest left steering, limited by the code
 
-
 During the lap runs, the steering angles are determined by a proportional derivative control logic based on
-Whether there are blocks, and the proximity of the blocks
-When there are no walls, the relative position of the camera between the walls
-
+* Whether there are blocks, and the proximity of the blocks
+* When there are no walls, the relative position of the camera between the walls
 
 Detailed explanation of this logic is provided in the code.
 
-
 ## Choice of micro controller - Microbit
 We experimented with an Arduino Uno R3 and  board early on with a motor control shield for both DC motor control and Servo motor control.
+
 ### Why not Arduino
 We had issues getting the motor control shield to work due to an outdated library. As we were troubleshooting that, we discovered that Microbit is more powerful than the Arduino Uno R3 board. Also the coding was to be done in C++ which we were not familiar with.
+
 ### Why not ESP32 S3 WROOM Camera board
 We wanted to try using it with Edge impulse image classification for object detection. However,  we could never get the camera to respond. Also the coding was to be done in C++ which we were not familiar with.
+
 ### Microbit Advantages
 * More processing power than the Arduino
 * Smaller form factor compared to an Arduino
@@ -174,18 +189,23 @@ We wanted to try using it with Edge impulse image classification for object dete
 * Inbuilt LED array display and speakers were used for troubleshooting
 * Inbuilt Inertial Movement Sensor unit for precise turns. We did not need this.
 * Very low power supply requirements
+
 ### Microbit Disadvantages
 * Harder to natively connect to the pins. We used the Siyeenove Microbit shield to overcome this
 * Inadequate information online to understand interfacing with Raspberry Pi over USB serial connection, but it was quite easy to figure out with a bit of experimentation.
+
 ### Microbit Motor Control
 Siyeenove Microbit shield allows us to conveniently interface with the Servo motor via the P0 pin. We use analog signal to position the servo motor. The shield also accepts 5V input which it uses to drive the servo.
+
 ### Microbit Serial connection with Raspberry Pi
 The Microbit connects with the Raspberry Pi via a USB cable for serial data transfer. This serial data connection is used by the Raspberry Pi to achieve bi-directional data exchange with the Microbit
 * TX to Raspberry Pi - Control signals to start and stop the car operation
 * RX from Raspberry Pi - Steering and Servo control values
+
 ### Use of Microbit buttons
 * Button A is programmed to start and stop the car. When car is stopped by pressing the A button, pressing it again will commence a new run
 * Button B is the kill command. It is programmed to stop all motor activity by signalling the Raspberry Pi to exit the Python program execution
+
 ### Function Outline
 * As soon as it starts, it initializes the servo direction to 90 (which keeps the car straight)
 * It awaits signal from the Raspberry Pi to confirm its program has started successfully. When it receives the confirmation, it displays an 'S' on the LED array
@@ -194,33 +214,37 @@ The Microbit connects with the Raspberry Pi via a USB cable for serial data tran
 * The servo turn angle is sent as analog signal to the servo motor directly. The 5V input required by the Servo is supplied by the Siyeenove Mshield board.
 * If the user wants to stop the car (and reset its values so the car can run again), they can simply press the 'A' button again which will signal the Raspberry Pi to stop the loop that processes vision data. This will display a minus '-' on the LED array.
 * If the user wants to kill the car (completely end the program), they can press the 'B' button which will signal the Raspberry Pi to exit the Python program
+
 ## Choice of SBC - Raspberry Pi
 * Raspberry Pi was an easy choice. We were familiar with it. Also, during our research we also noticed many other teams using it with a camera module.
+
 ### Advantages
 * Familiar platform with abundant support, especially for vision processing using OpenCV libraries with a basic camera module
 * Allows programming in Python which we are comfortable with
 * Ability to connect serial interface via USB
+
 ### Disadvantages
 * We used R-Pi 4B which requires a 2.5A portable power supply which was initially hard to manage.
 * We tried driving the servo with Raspberry Pi directly, but that didn’t go well. The servo turns were jittery and the Raspberry Pi shutdown whenever the Servo experienced quick successive movements. So we decided to have the Microcontroller handle the servo control with the vision input parameters from the Raspberry Pi
+
 ### Choice of camera
 **Iteration 1: Raspberry Pi Camera V2**
 
-
 We used this until 3 weeks before the canadian competition simply because we already had it and it seemed to work fine for the open challenge. We were able to get 40 fps processing speeds with it but that didn’t really matter to us.
-
 
 However, it wasn’t able to see either of the walls properly, which was OK for the straight runs, but for the turns, our logic worked based on the white spaces of the openings (instead of turning at the curves. In this case, the car would run up to the wall ahead and then try to make the turn which resulted in the car running into the walls.
 
-
 So we researched online and switched to a wide angle camera.
+
 **Iteration 2: Sainsmart 160 degree wideangle 5MP Camera**
+
 This worked for us with some tweaking.
 * Since it was a 5MP camera, we had to downscale it to 480p and achieved about 25 fps.
 * The lens had a pink hue depending on the lightning and we had to adjust the hue on the HSV configuration
 * The camera angle pointing ahead had to be lowered since the camera was being affected by ambient lighting conditions
 * The color detection areas had to be adjusted (mostly lowered) to avoid external objects influencing the steering
 * Thankfully, we could reuse our 3D printed mounts without having to redesign it.
+
 ### Function Outline
 * Python program obs_ch.py is loaded from the crontab, which launches the program when the Raspberry Pi boots up
 * Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program.
@@ -231,23 +255,20 @@ This worked for us with some tweaking.
     * For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks.
 * Detailed explanation of the code is provided in the Program Logic section
 
-
-
+---
 
 # Power Management
-
 
 Initially, as we were testing vision, all the components were powered with a wall outlet power source. Once we fully understood the power requirements, we found a 12V rechargeable power supply that can supply 3A of current to be able to concurrently supply power to
 * Raspberry Pi 4B - Needs 5V 2.5A
 * Siyeenove shield for the Microbit - Needs 5V 0.5A
 * 12V BLDC motor - Needs 12V 0.13A (0.35A at stall)
 
-
 We used a 12V to 5V step-down power converter to supply 5V power to the Raspberry Pi and the Microbit shield.
-
 
 The Microbit itself did not require separate power since it was powered by the shield.
 
+---
 
 # Bill of Materials
 We experimented with many boards and components before settling on our final design. The below list is for the final design only.
@@ -272,11 +293,12 @@ We experimented with many boards and components before settling on our final des
 | 3D printed parts to complete the chassis  |   |   |
 | **Total**  | **\$251.44**  |   |
 
+---
 
 # Program Logic for mobility control
 
-
 ## Microbit - pi2mb_motors_control.py
+
 ### Summary
 * Microbit powers up, then plays a tone, initializes motors & serial.
 * **Button A** sends "go" to R-Pi (start/stop car).
