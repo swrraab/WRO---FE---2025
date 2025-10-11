@@ -21,10 +21,9 @@ This repository has the below folders
 	* [**Iteration 2**](#iteration-2)
 	* [**Iteration 3 - Final**](#iteration-3---final)
 * [**3D printed parts**](#3d-printed-parts)
-* [**System control**](#system-control)
-	* [**To see or to sense?**](#to-see-or-to-sense?)
 * [**Power Management**](#power-management)
 * [**Mobility Control**](#mobility-control)
+  	* [**To see or to sense?**](#to-see-or-to-sense?)
 	* [**Drive Motor**](#drive-motor)
  	* [**Steering Servo**](#steering-servo)
 	* [**Choice of micro controller - Microbit**](#choice-of-micro-controller-microbit)
@@ -145,28 +144,6 @@ Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber in
 
 ---
 
-# System control
-
-This section explains the control system setup i.e, the raspberry pi, the camera, the microbit and the shield, the motor driver, the motors themselves, and the design choices that led to selection of each component
-
-## To see or to sense?
-### Iteration 1 - Use of sensors
-We originally wanted to connect a few sensors and motors to Arduino and test it. Then we had a better idea which is what we experimented with on the first 2 iteration of the chassis
-* Use of sensors connected to the Microbit
-    * Ultrasonic sensors for wall detection
-    * Color sensors for line detection.
-    * IMU for accurate turns
-* We tested with one Ultrasonic sensor and one color sensor in iteration 2 of our chassis and we were successful.
-![Iteration 1 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/schematic%20early.png)
-
-### Iteration 2 - Computer Vision
-* In our subsequent research we were able to find inspiration to do it all with just one wideangle camera. We tested it out and found success - as explained in the program logic section
-* For the final iteration, we used the wideangle camera to detect walls, blocks and lines while driving forward and a TOF200C sensor in the back to assist with reverse parking
-
-![Iteration 2 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Component_Schematic.png)
-
-![Circuit Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Circuit_Schematic.png)
-
 # Power Management
 
 Initially, as we were testing vision, all the components were powered with a wall outlet power source. Once we fully understood the power requirements, we found a 12V rechargeable power supply that can supply 3A of current to be able to concurrently supply power to
@@ -183,6 +160,49 @@ The Microbit itself did not require separate power since it was powered by the s
 ---
 
 # Mobility Control
+This section explains the control system setup i.e, the raspberry pi, the camera, the microbit and the shield, the motor driver, the motors themselves, and the design choices that led to selection of each component
+
+## To see or to sense?
+### Iteration 1 - Use of sensors
+We originally wanted to connect a few sensors and motors to Arduino and test it. Then we had a better idea which is what we experimented with on the first 2 iteration of the chassis
+* Use of sensors connected to the Microbit
+    * Ultrasonic sensors for wall detection
+    * Color sensors to detect floor lines
+    * IMU for accurate turns
+* Camera was to be used only to detech blocks
+* We tested with one Ultrasonic sensor and one color sensor in iteration 2 of our chassis and we were successful.
+![Iteration 1 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/schematic%20early.png)
+
+### Iteration 2 - Computer Vision
+* In our subsequent research we were able to find inspiration to replace most sensors with just one wideangle camera. We tested it out and found success - as explained in the program logic section
+* For the final iteration, we used the wideangle camera to detect walls, blocks and lines while driving forward and a TOF200C sensor in the back to assist with reverse parking
+
+![Iteration 2 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Component_Schematic.png)
+
+![Circuit Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Circuit_Schematic.png)
+
+---
+
+## Choice of camera
+**Iteration 1: Raspberry Pi Camera V2**
+
+We used this until 3 weeks before the canadian competition simply because we already had it and it seemed to work fine for the open challenge. We were able to get 40 fps processing speeds with it but that didn’t really matter to us.
+
+However, it wasn’t able to see either of the walls properly, which was OK for the straight runs, but for the turns, our logic worked based on the white spaces of the openings (instead of turning at the curves. In this case, the car would run up to the wall ahead and then try to make the turn which resulted in the car running into the walls.
+
+So we researched online and switched to a wide angle camera.
+
+**Iteration 2: Sainsmart 160 degree wideangle 5MP Camera**
+
+This worked for us with some tweaking.
+* Since it was a 5MP camera, we had to downscale it to 480p and achieved about 25 fps.
+* The lens had a pink hue depending on the lightning and we had to adjust the hue on the HSV configuration
+* The camera angle pointing ahead had to be lowered since the camera was being affected by ambient lighting conditions
+* The color detection areas had to be adjusted (mostly lowered) to avoid external objects influencing the steering
+* Thankfully, we could reuse our 3D printed mounts without having to redesign it.
+
+---
+
 ## Drive motor
 * In the design that was employed for the Canadian competition, we used Lego 9v DC motor because it had the ideal torque and speed characteristics we needed. This motor was paired with a L298N motor driver with 12v power input from the battery and PWM control input from the Microbit to control the 9V Lego DC motor. However this motor offered no feedback and we had no control over the speed. For this reason, we couldn’t use it to get out of parking or the perform parallel parking
 * In the current design, we use a 12V BLDC (Brushless DC) motor which has the following characteristics
@@ -197,6 +217,8 @@ The Microbit itself did not require separate power since it was powered by the s
 
 During the course of open and obstacle challenge runs, the motor runs at full speed - and it feels like it is not enough because of the unintended gear reduction. Proportional speed control is employed only when getting out of parking and when parallel parking
 
+---
+
 ## Steering Servo
 * Used SG90 180 degree servo motor with **analog signal** from the Microbit.
     * 90 degree points the wheels straight
@@ -208,6 +230,8 @@ During the lap runs, the steering angles are determined by a proportional deriva
 * When there are no walls, the relative position of the camera between the walls
 
 Detailed explanation of this logic is provided in the code.
+
+---
 
 ## Choice of micro controller - Microbit
 We experimented with an Arduino Uno R3 and  board early on with a motor control shield for both DC motor control and Servo motor control.
@@ -254,6 +278,8 @@ The Microbit connects with the Raspberry Pi via a USB cable for serial data tran
 * If the user wants to stop the car (and reset its values so the car can run again), they can simply press the 'A' button again which will signal the Raspberry Pi to stop the loop that processes vision data. This will display a minus '-' on the LED array.
 * If the user wants to kill the car (completely end the program), they can press the 'B' button which will signal the Raspberry Pi to exit the Python program
 
+---
+
 ## Choice of SBC - Raspberry Pi
 * Raspberry Pi was an easy choice. We were familiar with it. Also, during our research we also noticed many other teams using it with a camera module.
 
@@ -275,24 +301,6 @@ The Microbit connects with the Raspberry Pi via a USB cable for serial data tran
     * For the open run, it looks at the walls and uses PD control to keep the car between the walls
     * For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks.
 * Detailed explanation of the code is provided in the Program Logic section
-
-## Choice of camera
-**Iteration 1: Raspberry Pi Camera V2**
-
-We used this until 3 weeks before the canadian competition simply because we already had it and it seemed to work fine for the open challenge. We were able to get 40 fps processing speeds with it but that didn’t really matter to us.
-
-However, it wasn’t able to see either of the walls properly, which was OK for the straight runs, but for the turns, our logic worked based on the white spaces of the openings (instead of turning at the curves. In this case, the car would run up to the wall ahead and then try to make the turn which resulted in the car running into the walls.
-
-So we researched online and switched to a wide angle camera.
-
-**Iteration 2: Sainsmart 160 degree wideangle 5MP Camera**
-
-This worked for us with some tweaking.
-* Since it was a 5MP camera, we had to downscale it to 480p and achieved about 25 fps.
-* The lens had a pink hue depending on the lightning and we had to adjust the hue on the HSV configuration
-* The camera angle pointing ahead had to be lowered since the camera was being affected by ambient lighting conditions
-* The color detection areas had to be adjusted (mostly lowered) to avoid external objects influencing the steering
-* Thankfully, we could reuse our 3D printed mounts without having to redesign it.
 
 ---
 
@@ -368,6 +376,7 @@ deg = 90
 pins.servo_write_pin(AnalogPin.P0, deg)   # Servo straight
 ```
 * Servo is set to **90° (straight)**
+
 ---
 ### Button Controls
 ```
