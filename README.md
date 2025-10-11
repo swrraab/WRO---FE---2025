@@ -23,9 +23,12 @@ This repository has the below folders
 * [**3D printed parts**](#3d-printed-parts)
 * [**System control**](#system-control)
 	* [**To see or to sense?**](#to-see-or-to-sense?)
-	* [**Mobility Control**](#mobility-control)
+* [**Mobility Control**](#mobility-control)
+	* [**Drive Motor**](#drive-motor)
+ 	* [**Steering Servo**](#steering-servo)
 	* [**Choice of micro controller - Microbit**](#choice-of-micro-controller-microbit)
 	* [**Choice of SBC - Raspberry Pi**](#choice-of-sbc-raspberry-pi)
+ 	* [**Choice of Camera**](#choice-of-camera)
 * [**Power Management**](#power-management)
 * [**Bill of Materials**](#bill-of-materials)
 * [**Program Logic for mobility control**](#program-logic-for-mobility-control)
@@ -104,6 +107,10 @@ Finally, we settled on a Lego technic chassis that we built ourselves and it wor
 * The final chassis looks bulky. There is room for optimization
 * Heavier than the other 2 chassis at 900 gms, however it is still within allowed weight
 
+![Car Composite View](https://github.com/swrraab/WRO---FE---2025/blob/main/v-photos/Car%20Images.png)
+
+**Note:** Full resolution pictures of the car can be downloaded from the [**`v-photos`**](/v-photos) folder
+
 ---
 
 # 3D printed parts
@@ -111,18 +118,31 @@ Since we used a Lego Chassis, we used 3D printed parts made from Carbon Fiber in
 * **The servo motor to the front wheels for steering**
     * Initially we tried to 3D print our own design.
     * Later, we found a 3D file that we found on [Thingiverse](https://www.thingiverse.com/thing:4303585) that worked better for our purpose
-![Servo Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/s90%20Servo%20Mount%20v1.PNG)
+	![Servo Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/s90%20Servo%20Mount%20v1_small.PNG)
 
 * **The BLDC motor to the drive axle**
-	* We 3D printed a custom mount for the BLDC motor that fits the chassis dimensions
+	* We 3D printed a custom mount for the BLDC motor that connects to Lego Technic beams and fits the chassis dimensions
+ 
+   ![Brushless DC Motor Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/bldc_motor_mount_small.png)
+   
 	* We also 3D printed a connector to connect the motor shaft to the Lego axle to which the drive gear was attached
+
+   ![Motor Axle Connector](https://github.com/swrraab/WRO---FE---2025/blob/main/models/motor%20axle%20connector_small.PNG)
+
+* **TOF200C Distance Sensor to the back of the Lego Chassis**
+    * It is a 2 part 3D model - One that holds the TOF200C sensor and a lid that holds in place with a bit of instant glue
+    * This model too mounts on to Lego Technic beams and connects to the back of the chassis
+
+	![TOF200C Distance Sensor mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/TOF200C%20enclosure_small.PNG)
 
 * **Wide angle camera**
     * This is to attach to the Lego chassis, and to hold the camera at a specific angle.
     * This design which connects to a standard Lego Technic beam allowed us to experiment with various heights and mount angles before we got it right.
   
-![Camera Mount Extension](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount%20Extension.png)
-![Camera Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount.png)
+	![Camera Mount Extension](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount%20Extension_small.png)
+	![Camera Mount](https://github.com/swrraab/WRO---FE---2025/blob/main/models/Camera%20Mount%20small.png)
+
+**Note:** Full resolution pictures and 3D models can be downloaded from the [**`models`**](/models) folder
 
 ---
 
@@ -141,13 +161,30 @@ We originally wanted to connect a few sensors and motors to Arduino and test it.
 ![Iteration 1 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/schematic%20early.png)
 
 ### Iteration 2 - Computer Vision
-* In our subsequent research we were able to find inspiration to do it all with just one camera. We tested it out and found success - as explained in the program logic section
-* Since we had success with using the camera alone, we removed all the sensors from the design and decided to go with only camera vision
+* In our subsequent research we were able to find inspiration to do it all with just one wideangle camera. We tested it out and found success - as explained in the program logic section
+* For the final iteration, we used the wideangle camera to detect walls, blocks and lines while driving forward and a TOF200C sensor in the back to assist with reverse parking
 
 ![Iteration 2 Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Component_Schematic.png)
 
-## Mobility Control
-### Drive motor
+![Circuit Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Circuit_Schematic.png)
+
+# Power Management
+
+Initially, as we were testing vision, all the components were powered with a wall outlet power source. Once we fully understood the power requirements, we found a 12V rechargeable power supply that can supply 3A of current to be able to concurrently supply power to
+* Raspberry Pi 4B - Needs 5V 2.5A
+* Siyeenove shield for the Microbit - Needs 5V 0.5A
+* 12V BLDC motor - Needs 12V 0.13A (0.35A at stall)
+
+We used a 12V to 5V step-down power converter to supply 5V power to the Raspberry Pi and the Microbit shield.
+
+The Microbit itself did not require separate power since it was powered by the shield.
+
+![Power Distribution](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Power_Management.png)
+
+---
+
+# Mobility Control
+## Drive motor
 * In the design that was employed for the Canadian competition, we used Lego 9v DC motor because it had the ideal torque and speed characteristics we needed. This motor was paired with a L298N motor driver with 12v power input from the battery and PWM control input from the Microbit to control the 9V Lego DC motor. However this motor offered no feedback and we had no control over the speed. For this reason, we couldn’t use it to get out of parking or the perform parallel parking
 * In the current design, we use a 12V BLDC (Brushless DC) motor which has the following characteristics
 	* Inbuilt motor driver. No external driver required
@@ -157,17 +194,18 @@ We originally wanted to connect a few sensors and motors to Arduino and test it.
 	* Draws 130mA of current nominally, 350mA of current at stall which can be supported by our power supply
 	* Inbuilt encoder for feedback
 	* Separate inputs for speed and direction control with PWM signals
+ * This DC motor is coupled with the drive axle using lego gears achieving a 1.5 reduction thus increasing torque. This is unintended. We have more torque than we need. We would've favored more speed. However, the chassis design limited us from using other gears
 
-During the course of open and obstacle challenge runs, the motor runs at full speed - and it feels like it is not enough. Proportional speed control is employed only when getting out of parking and when parallel parking
+During the course of open and obstacle challenge runs, the motor runs at full speed - and it feels like it is not enough because of the unintended gear reduction. Proportional speed control is employed only when getting out of parking and when parallel parking
 
-### Steering Servo
-* Used SG90 180 degree servo motor with analog output from the Microbit.
+## Steering Servo
+* Used SG90 180 degree servo motor with **analog signal** from the Microbit.
     * 90 degree points the wheels straight
-    * 30 degree is the farthest right steering, limited by the code
-    * 150 degrees is the farthest left steering, limited by the code
+    * 15 degree is the farthest right steering, limited by the code
+    * 165 degrees is the farthest left steering, limited by the code
 
 During the lap runs, the steering angles are determined by a proportional derivative control logic based on
-* Whether there are blocks, and the proximity of the blocks
+* Whether there are blocks, the position and proximity of the blocks
 * When there are no walls, the relative position of the camera between the walls
 
 Detailed explanation of this logic is provided in the code.
@@ -229,7 +267,7 @@ The Microbit connects with the Raspberry Pi via a USB cable for serial data tran
 * We used R-Pi 4B which requires a 2.5A portable power supply which was initially hard to manage.
 * We tried driving the servo with Raspberry Pi directly, but that didn’t go well. The servo turns were jittery and the Raspberry Pi shutdown whenever the Servo experienced quick successive movements. So we decided to have the Microcontroller handle the servo control with the vision input parameters from the Raspberry Pi
 
-### Choice of camera
+## Choice of camera
 **Iteration 1: Raspberry Pi Camera V2**
 
 We used this until 3 weeks before the canadian competition simply because we already had it and it seemed to work fine for the open challenge. We were able to get 40 fps processing speeds with it but that didn’t really matter to us.
@@ -256,23 +294,6 @@ This worked for us with some tweaking.
     * For the open run, it looks at the walls and uses PD control to keep the car between the walls
     * For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks.
 * Detailed explanation of the code is provided in the Program Logic section
-
----
-
-# Power Management
-
-Initially, as we were testing vision, all the components were powered with a wall outlet power source. Once we fully understood the power requirements, we found a 12V rechargeable power supply that can supply 3A of current to be able to concurrently supply power to
-* Raspberry Pi 4B - Needs 5V 2.5A
-* Siyeenove shield for the Microbit - Needs 5V 0.5A
-* 12V BLDC motor - Needs 12V 0.13A (0.35A at stall)
-
-We used a 12V to 5V step-down power converter to supply 5V power to the Raspberry Pi and the Microbit shield.
-
-The Microbit itself did not require separate power since it was powered by the shield.
-
-![Power Distribution](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Power_Management.png)
-
-![Circuit Schematic](https://github.com/swrraab/WRO---FE---2025/blob/main/schemes/Circuit_Schematic.png)
 
 ---
 
@@ -395,6 +416,17 @@ else:
 ```
 * Send `deg`, the servo turn angle as analog input to the P0 Pin connected to the Servo motor
 * **Potential Improvements:** Ideally, we would want to have a PD loop to ensure the steering turns are smooth, but with the Microbit and SG90 servo we don’t have a way to implement a closed loop feedback system. So, we had to forgo PD control at the component level and favor the implementation of PD control in the Raspberry Pi before it sends the values to the Microbit.
+
+### Getting `pi2mb_motors_control.py` to run on the Microbit
+
+* Note that the Microbit should be physically connected to the device you are using to upload the code, with a micro USB cable. It can be connected either to your workstation, or your Raspberry Pi. 
+* The instructions to load this program is relatively easier because we followed the simpler method by accessing https://makecode.microsoft.org using the Chrome browser on the Raspberrry Pi (or any browser on your laptop). There are alternatives to use the Thonny Python editor or Visual Studio code, but we found it too tedious just to get the Microbit connected to take the program. 
+* Open a new Python program on makecode by clicking on **New Project**. Give it a name and select **Python Only** in the code options drop-down. Then click on **Create** button.
+![Creating a new Python program on makecode](/other/image.png)
+* When the program is open, copy the entire content of [`pi2mb_motors_control.py`](/src/pi2mb_motors_control.py) from the [`src`](/src) folder, on to the new Python program on makecode.
+* Click on **Download** button to deploy the binary code to Microbit. You will hear an audible beep when the program is loaded to indicated the Microbit has successfully received the code (***Note:*** The audible beep is not a default behavior. We included the beep as a way for the Microbit to convey its readiness everytime it starts or is reset)
+* When connected to the Raspberry Pi over USB cable (as shown in the [schematic](/schemes/WRO%20Future%20Engineeers%202025%20-%20Component%20Schematic.png) and powered on, the program will be ready to transmit to and receive data from the Raspberry Pi to start your car. 
+
 ---
 
 ## Raspberry Pi - obs_ch.py
@@ -476,9 +508,9 @@ Uses a **PD controller** to make the steering smooth, not jerky. The logic looks
 * Looks for either a green block or a red block in a predefined region of the camera frame.
 * If a block is found, it calculates **how far** the block is from the desired position.
 * It then produces a control signal (e_block) that tells the car how much to adjust its steering when approaching the block.
-	* For red blocks, the “target x” is the left side of the detection zone.
-	* For green blocks, the “target x” is the right side of the detection zone.
-	* This means the car is supposed to go toward the left for red blocks and toward the right for green blocks..
+	* For red blocks, the “target x” is the right side of the detection zone.
+	* For green blocks, the “target x” is the left side of the detection zone.
+	* This means the car is supposed to go toward the right for red blocks and toward the left for green blocks..
 	* These are scaled by tuning constants K_X and K_Y.
 	* Both are combined into one error signal e_block. This makes the car steer differently depending on the block’s color and the car’s driving direction.
 
@@ -510,11 +542,7 @@ Uses a **PD controller** to make the steering smooth, not jerky. The logic looks
 
 * The count of lines is used for navigation and to decide when to stop.
 
-
-## Loading the software on to the hardware
-Below section explains how to load each program on to their respective hardwares
-
-**Getting `obs_ch.py` to run on the Raspberry Pi**
+### Getting `obs_ch.py` to run on the Raspberry Pi
 
 * Follow the Raspberry Pi **[Getting Started page](https://www.raspberrypi.com/documentation/computers/getting-started.html)** and follow all the instructions to get the OS distribution loaded and Raspberry Pi booted up
 * `Tip` - Ensure you follow the instruction at the tail end of the above page to setup the **Raspberry Pi Connect". This will allow you to remotely connect to your Raspberry Pi with your laptop over Wifi. Otherwise, a separate monitor, HDMI cable, keyboard and mouse will be required every time you connect the Raspberry Pi. 
@@ -538,13 +566,3 @@ Below section explains how to load each program on to their respective hardwares
   `Tip` - The above will redirect the standard print output and errors to `/dev/null` which is not useful if you want to access them. If you want debug print messages to be saved, ensure you create a log file with the command `sudo touch /dev/cronlog` and adding this file path to the above crontab statement instead. 
 
 * Now you are all setup. If you reboot your Raspberry Pi, `obs_ch.py` file will start running. If it is not, check the `/dev/cronlog` for error messages to troubleshoot the problem.
-
-**Getting `pi2mb_motors_control.py` to run on the Microbit**
-
-* Note that the Microbit should be physically connected to the device you are using to upload the code, with a micro USB cable. It can be connected either to your workstation, or your Raspberry Pi. 
-* The instructions to load this program is relatively easier because we followed the simpler method by accessing https://makecode.microsoft.org using the Chrome browser on the Raspberrry Pi (or any browser on your laptop). There are alternatives to use the Thonny Python editor or Visual Studio code, but we found it too tedious just to get the Microbit connected to take the program. 
-* Open a new Python program on makecode by clicking on **New Project**. Give it a name and select **Python Only** in the code options drop-down. Then click on **Create** button.
-![Creating a new Python program on makecode](/other/image.png)
-* When the program is open, copy the entire content of [`pi2mb_motors_control.py`](/src/pi2mb_motors_control.py) from the [`src`](/src) folder, on to the new Python program on makecode.
-* Click on **Download** button to deploy the binary code to Microbit. You will hear an audible beep when the program is loaded to indicated the Microbit has successfully received the code (***Note:*** The audible beep is not a default behavior. We included the beep as a way for the Microbit to convey its readiness everytime it starts or is reset)
-* That is all! When connected to the Raspberry Pi over USB cable (as shown in the [schematic](/schemes/WRO%20Future%20Engineeers%202025%20-%20Component%20Schematic.png) and powered on, the program will be ready to transmit to and receive data from the Raspberry Pi and move your car. 
