@@ -23,18 +23,17 @@ This repository has the below folders
 * [**3D printed parts**](#3d-printed-parts)
 * [**System control**](#system-control)
 	* [**To see or to sense?**](#to-see-or-to-sense?)
+* [**Power Management**](#power-management)
 * [**Mobility Control**](#mobility-control)
 	* [**Drive Motor**](#drive-motor)
  	* [**Steering Servo**](#steering-servo)
 	* [**Choice of micro controller - Microbit**](#choice-of-micro-controller-microbit)
 	* [**Choice of SBC - Raspberry Pi**](#choice-of-sbc-raspberry-pi)
  	* [**Choice of Camera**](#choice-of-camera)
-* [**Power Management**](#power-management)
 * [**Bill of Materials**](#bill-of-materials)
 * [**Program Logic for mobility control**](#program-logic-for-mobility-control)
 	* [**Microbit - pi2mb_motors_control.py**](#microbit---pi2mbmotorscontrolpy)
 	* [**Raspberry Pi - obs_ch.py**](#raspberry-pi---obschpy)
-	* [**Loading the software on to the hardware**](#loading-the-software-on-to-the-hardware)
 
 ---
 
@@ -267,6 +266,16 @@ The Microbit connects with the Raspberry Pi via a USB cable for serial data tran
 * We used R-Pi 4B which requires a 2.5A portable power supply which was initially hard to manage.
 * We tried driving the servo with Raspberry Pi directly, but that didn’t go well. The servo turns were jittery and the Raspberry Pi shutdown whenever the Servo experienced quick successive movements. So we decided to have the Microcontroller handle the servo control with the vision input parameters from the Raspberry Pi
 
+### Function Outline
+* Python program obs_ch.py is loaded from the crontab, which launches the program when the Raspberry Pi boots up
+* Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program.
+* Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit.
+* As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
+* The program has 2 distinct vision processing logic inside it
+    * For the open run, it looks at the walls and uses PD control to keep the car between the walls
+    * For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks.
+* Detailed explanation of the code is provided in the Program Logic section
+
 ## Choice of camera
 **Iteration 1: Raspberry Pi Camera V2**
 
@@ -284,16 +293,6 @@ This worked for us with some tweaking.
 * The camera angle pointing ahead had to be lowered since the camera was being affected by ambient lighting conditions
 * The color detection areas had to be adjusted (mostly lowered) to avoid external objects influencing the steering
 * Thankfully, we could reuse our 3D printed mounts without having to redesign it.
-
-### Function Outline
-* Python program obs_ch.py is loaded from the crontab, which launches the program when the Raspberry Pi boots up
-* Once it is ready, it sends a signal to the Microbit indicating that it is ready. If there is a problem with the Python Program loading, the signal to the Microbit will not be sent which will allow the user to fix the program.
-* Then it listens to the Microbit's A button to be pressed to start the car which starts calculating and transmitting DC motor speed and Servo turn data to the Microbit.
-* As the car runs, the program reads visual data from the camera frame by frame and processes it using proportional-derivative controller (https://en.wikipedia.org/wiki/PID_controller) to get the servo turn values, which is transmitted to the Microbit in real-time to control the cars turns
-* The program has 2 distinct vision processing logic inside it
-    * For the open run, it looks at the walls and uses PD control to keep the car between the walls
-    * For the obstacle run, it looks at the color blocks and uses PD control to turn the car to avoid the blocks.
-* Detailed explanation of the code is provided in the Program Logic section
 
 ---
 
@@ -361,6 +360,7 @@ serial.set_rx_buffer_size(4)
 ```
 * Serial connection parameters are initialized for Microbit to exchange commands/data with the Raspberry Pi.
 * Note the buffer size of 4. This means all the inputs received from the Raspberry Pi should be 4 characters including the newline character used a delimiter. The first 3 characters are the numerical value of the steering angle
+  
 ---
 ### Default Values
 ```
@@ -379,6 +379,7 @@ input.on_button_pressed(Button.A, on_button_pressed_a)
 ```
 * When **Button A** is pressed → Microbit sends "go" over serial to R-Pi.
 * R-Pi decides whether to start/stop the car.
+  
 ---
 ### Main Loop
 ```
@@ -467,6 +468,7 @@ We used a HSV color palette and converted the actual HSV values to OpenCV values
 * **V (Value)** - 0-100 values converted to 0-255 values by multiplying by 2.55
 
 **Regions of interest**
+
 We split the camera view into smaller zones, each with a specific purpose.
 
 _For block detection_
@@ -528,7 +530,7 @@ Uses a **PD controller** to make the steering smooth, not jerky. The logic looks
    	* At the end of each loop, the calculated steering values are sent to Microbit for turning
    	* DC Motor control PWM values are handled by the Raspberry Pi
 	
-* Anytime during the run, stop and reverse if Wall is detected
+* Anytime during the run, stop and reverse if a wall or color block is close ahead in direct collision course
 
 * Checks for red or green blocks:
 	* If block found → calculate steering correction for red and green blocks (u_red or u_green) and determine which value is most influential and use that as the steering value.
