@@ -1,4 +1,6 @@
 Team's photos
 ====
 
-This directory must contain 2 photos of the team (an official one and one funny photo with all team members)
+![](https://github.com/swrraab/WRO---FE---2025/blob/main/t-photos/officialpic.JPG)
+
+![](https://github.com/swrraab/WRO---FE---2025/blob/main/t-photos/funnypic.jpg)
